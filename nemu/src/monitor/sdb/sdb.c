@@ -54,13 +54,16 @@ static int cmd_q(char *args) {
 
 static int cmd_si(char *args)
 {
-	int step = 0;
-	if(args == NULL)
-					step=1;
-	else
-					sscanf(args,"%d",&step);
-	cpu_exec(step);
-	return 0;
+				char *arg = strtok(args," ");
+				if(arg == NULL)
+				{
+					printf("too few arguments.\n");
+					return 1;
+				}
+				int num = atoi(arg);
+				cpu_exec(num);
+				printf("OK");
+				return 0;
 }
 static int cmd_help(char *args);
 
