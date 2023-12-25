@@ -53,12 +53,23 @@ static int cmd_q(char *args) {
   return -1;
 }
 
-static int cmd_si(char *args){
-	char *arg = strtok(NULL," ");
+static int cmd_si(char *args){		//单步运行
+	char *arg = strtok(args," ");
 	if(arg == NULL)
 					return 1;
 	int num = atoi(arg);
 	cpu_exec(num);
+	return 0;
+}
+
+static int cmd_info(char *args){
+	char *arg = strtok(args," ");
+	if(arg == NULL)
+					printf("No args.\n");
+	else if(strcmp(args,"r")==0)
+					isa_reg_display();
+/*	else if(strcmp(args,"w")==0)
+					print_wp();			*/
 	return 0;
 }
 static int cmd_help(char *args);
@@ -73,7 +84,8 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
-	{ "si","单步执行", cmd_si }
+	{ "si","单步执行", cmd_si },
+	{"info","打印寄存器状态",cmd_info}
 
 };
 
