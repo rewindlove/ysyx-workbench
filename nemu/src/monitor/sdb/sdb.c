@@ -55,17 +55,10 @@ static int cmd_q(char *args) {
 
 static int cmd_si(char *args){
 	char *arg = strtok(NULL," ");
-	int step = 0;
-	if(arg == NULL){
-		cpu_exec(1);
-		return 0;
-	}
-	sscanf(arg,"%d",&step);
-	if(step<-1){
-		printf("Error,N should be greater or equal to -1");
-		return 0;
-	}
-	cpu_exec(step);
+	if(arg == NULL)
+					return 1;
+	int num = atoi(arg);
+	cpu_exec(num);
 	return 0;
 }
 static int cmd_help(char *args);
