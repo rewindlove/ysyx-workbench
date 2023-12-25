@@ -26,7 +26,7 @@ const char *regs[] = {
 void isa_reg_display() {
 				int len =sizeof(regs)/sizeof(regs[0]);
 				for(int i=0;i<len;i++)
-								printf("reg%s ---> %d\n",regs[i],cpu.gpr[i]);		//gpr的值代表了寄存器对应的值
+								printf("reg %s ---> %d\n",regs[i],cpu.gpr[i]);		//gpr的值代表了寄存器对应的值
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
