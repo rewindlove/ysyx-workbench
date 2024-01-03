@@ -18,7 +18,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
-
+#include <memory/paddr.h>
 static int is_batch_mode = false;
 
 void init_regex();
@@ -72,6 +72,21 @@ static int cmd_info(char *args){
 					print_wp();			*/
 	return 0;
 }
+
+static int cmd_x(char *args){
+	char* n = strtok(args," ");
+	char* baseaddr = strtok(NULL," ");
+	int len = 0;
+	paddr_t addr = 0;
+	sscanf(n,"%d",&len);
+	sscanf(baseaddr,"%x",&addr);
+	for(int i=0;i<len;i++)
+	{
+		printf("%x\n",paddr_read(addr,4));
+		addr+=4;
+	}
+	return 0;
+}
 static int cmd_help(char *args);
 
 static struct {
@@ -85,7 +100,8 @@ static struct {
 
   /* TODO: Add more commands */
 	{ "si","单步执行", cmd_si },
-	{"info","打印寄存器状态",cmd_info}
+	{"info","打印寄存器状态",cmd_info},
+	{"x","扫描内存",cmd_x}
 
 };
 
