@@ -73,6 +73,7 @@ static int cmd_info(char *args){
 	return 0;
 }
 
+static int cmd_help(char *args);
 static int cmd_x(char *args){
 	char* n = strtok(args," ");
 	char* baseaddr = strtok(NULL," ");
@@ -87,7 +88,6 @@ static int cmd_x(char *args){
 	}
 	return 0;
 }
-static int cmd_help(char *args);
 
 static struct {
   const char *name;
