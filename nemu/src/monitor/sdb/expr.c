@@ -21,7 +21,7 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ,
+  TK_NOTYPE = 256, TK_EQ = 255, TK_NEQ = 254, TK_NUM = 253, TK_HEXNUM = 252
 
   /* TODO: Add more token types */
 
@@ -36,9 +36,17 @@ static struct rule {
    * Pay attention to the precedence level of different rules.
    */
 
-  {" +", TK_NOTYPE},    // spaces
-  {"\\+", '+'},         // plus
-  {"==", TK_EQ},        // equal
+  {" +", TK_NOTYPE},    		// spaces
+  {"\\+", '+'},         		// plus
+  {"==", TK_EQ},        				// equal
+	{"!=",TK_NEQ},										//not equal
+	{"[0-9]+",TK_NUM},						//num
+	{"0x[0-9,a-f]+",TK_HEXNUM},		//hexnum
+	{"\\(",'('},							//left parenthesis
+	{"\\)",')'},							//right parenthesis
+	{"\\*",'*'},							//multiply
+	{"\\/",'/'},							//divice
+	{"\\-",'-'}								//minus
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -95,11 +103,36 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
-          default: TODO();
+								case 256:break;
+								case 43:					//ascii num of +
+													tokens[nr_token].type=43;break;
+								case 255:
+													tokens[nr_token].type=255;break;
+								case 254:
+													tokens[nr_token].type=254;break;
+								case 253:
+													tokens[nr_token].type=253;
+													strncpy(tokens[nr_token].str,substr_start,substr_len);		//用strncpy函数将数字复制到tokens数组中
+													break;
+								case 252:					
+													tokens[nr_token].type=252;
+													strncpy(tokens[nr_token].str,substr_start,substr_len);
+								case 45:			//ascii num of -
+													tokens[nr_token].type=45;
+								case 42:			//ascii num of *
+													tokens[nr_token].type=42;
+								case 47:			//ascii num of /
+													tokens[nr_token].type=47;
+								case 40:			//ascii num of (
+													tokens[nr_token].type=40;
+								case 41:			//ascii num of )
+													tokens[nr_token].type=41;
+          default: break;
         }
-
         break;
       }
+				if(rules[i].token_type != 256)
+								nr_token++;
     }
 
     if (i == NR_REGEX) {
