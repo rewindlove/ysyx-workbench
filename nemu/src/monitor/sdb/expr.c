@@ -229,14 +229,16 @@ static bool make_token(char *e) {
 						return eval(p+1,q-1);
 					}
 					else{
-						int op=-1;float val1,val2;
+						int op=-1;
 						op=dominant_operator(p,q);
 						int op_type=tokens[op].type;
-						if(op_type == 251)
-										val2=eval(op+1,q);
-						switch(op_type){
-								case 251:return -val2;break;
+						if(op_type == 251){
+										uint32_t r_val = eval(op+1,q);
+								switch(op_type){
+								case 251:return -r_val;break;
 						}
+						}
+						uint32_t val1,val2;
 						val1=eval(p,op-1);
 						val2=eval(op+1,q);
 						switch(op_type){
