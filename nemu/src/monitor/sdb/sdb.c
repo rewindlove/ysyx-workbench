@@ -78,7 +78,7 @@ static int cmd_info(char *args){
 		bool a=0;
 		sscanf(args,"%s",s);
 		sum1 = expr(s,&a);
-		printf("ans:%d",sum1);
+		printf("ans:%d\n",sum1);
 		return 0;
  }
 
