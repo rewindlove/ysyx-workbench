@@ -21,7 +21,7 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ = 255, TK_NEQ = 254, TK_NUM = 253, TK_HEXNUM = 252
+  TK_NOTYPE = 256, TK_EQ = 255, TK_NEQ = 254, TK_NUM = 253, TK_HEXNUM = 252,TK_MINUS=251
 
   /* TODO: Add more token types */
 
@@ -46,7 +46,8 @@ static struct rule {
 	{"\\)",')'},							//right parenthesis
 	{"\\*",'*'},							//multiply
 	{"\\/",'/'},							//divice
-	{"\\-",'-'}								//minus
+	{"\\-",'-'},							//minus
+	{"-",TK_MINUS}
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -128,6 +129,10 @@ static bool make_token(char *e) {
 													strncpy(tokens[nr_token].str,&e[position - substr_len],substr_len);		//用strncpy函数将数字复制到tokens数组中
 													nr_token++;
 													break;
+								case 251:
+													tokens[nr_token].type=251;
+													nr_token++;
+													break;
 								case '-':			
 													tmp_token.type ='-';				 
 													tokens[nr_token++]=tmp_token;
@@ -207,6 +212,10 @@ static bool make_token(char *e) {
 												dom=i;
 												break;
 									}
+									else if(tokens[i].type == 251){
+													dom = i;
+													break;
+									}
 					}
 		return dom;
 }
@@ -228,6 +237,12 @@ static bool make_token(char *e) {
 						int op=-1;float val1,val2;
 						op=dominant_operator(p,q);
 						int op_type=tokens[op].type;
+						if(op_type == 251)
+										val2=eval(op+1,q);
+						switch(op_type){
+								case 251:return -val2;
+								default:return 0;
+						}
 						val1=eval(p,op-1);
 						val2=eval(op+1,q);
 						switch(op_type){
@@ -253,6 +268,8 @@ uint32_t expr(char *e, bool *success) {
 				*success = false;
 				return 0;
 			}
+			if(tokens[i].type == '-'&&(i == 0||(tokens[i-1].type!=TK_NUM&&tokens[i-1].type!=TK_HEXNUM)))
+							tokens[i].type = TK_MINUS;
 	}
 	if(brack!=0){
 		*success = false;
