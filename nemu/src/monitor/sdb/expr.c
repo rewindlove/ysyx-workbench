@@ -128,10 +128,6 @@ static bool make_token(char *e) {
 													strncpy(tokens[nr_token].str,&e[position - substr_len],substr_len);		//用strncpy函数将数字复制到tokens数组中
 													nr_token++;
 													break;
-								case 251:
-													tokens[nr_token].type=251;
-													nr_token++;
-													break;
 								case '-':			
 													tmp_token.type ='-';				 
 													tokens[nr_token++]=tmp_token;
