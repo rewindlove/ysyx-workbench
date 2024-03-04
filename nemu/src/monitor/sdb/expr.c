@@ -201,9 +201,11 @@ static bool make_token(char *e) {
 									else if(tokens[i].type == TK_NUM) continue;
 									else if(tokens[i].type == '+'||tokens[i].type == '-'){
 												dom=i;
+												break;
 									}
 									else if(tokens[i].type == '*'||tokens[i].type == '/'){
 												dom=i;
+												break;
 									}
 					}
 		return dom;
