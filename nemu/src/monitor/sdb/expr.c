@@ -235,8 +235,8 @@ static bool make_token(char *e) {
 						if(op_type == 251)
 										val2=eval(op+1,q);
 						switch(op_type){
-								case 251:return -val2;
-								default:return 0;
+								case 251:return -val2;break;
+								default:break;
 						}
 						val1=eval(p,op-1);
 						val2=eval(op+1,q);
