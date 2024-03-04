@@ -40,7 +40,7 @@ static struct rule {
   {"\\+", '+'},         		// plus
   {"==", TK_EQ},        				// equal
 	{"!=",TK_NEQ},										//not equal
-	{"[0-9]+",TK_NUM},						//num
+	{"\\b[0-9]+\\b",TK_NUM},						//num
 	{"0x[0-9,a-f]+",TK_HEXNUM},		//hexnum
 	{"\\(",'('},							//left parenthesis
 	{"\\)",')'},							//right parenthesis
@@ -101,37 +101,56 @@ static bool make_token(char *e) {
          * to record the token in the array `tokens'. For certain types
          * of tokens, some extra actions should be performed.
          */
-
+				Token tmp_token;
         switch (rules[i].token_type) {
 								case 256:break;
-								case 43:					//ascii num of +
-													tokens[nr_token++].type='+';break;
+								case '+': 
+													tmp_token.type ='+';				 
+													tokens[nr_token++]=tmp_token
+													;break;
 								case 255:
-													tokens[nr_token++].type=255;break;
+													tokens[nr_token].type=255;
+													strcpy(tokens[nr_token].str, "==");
+													nr_token++;
+													break;
 								case 254:
-													tokens[nr_token++].type=254;break;
+													tokens[nr_token].type=254;
+													strcpy(tokens[nr_token].str, "!=");
+													nr_token++;
+													break;
 								case 253:
 													tokens[nr_token].type=253;
-													strncpy(tokens[nr_token].str,substr_start,substr_len);		//用strncpy函数将数字复制到tokens数组中
-																																						nr_token++;
+													strncpy(tokens[nr_token].str,&e[position - substr_len],substr_len);		//用strncpy函数将数字复制到tokens数组中
+													nr_token++;
 													break;
 								case 252:					
 													tokens[nr_token].type=252;
-													strncpy(tokens[nr_token].str,substr_start,substr_len);
+													strncpy(tokens[nr_token].str,&e[position - substr_len],substr_len);		//用strncpy函数将数字复制到tokens数组中
 													nr_token++;
-								case 45:			//ascii num of -
-													tokens[nr_token++].type='-';
-								case 42:			//ascii num of *
-													tokens[nr_token++].type='*';
-								case 47:			//ascii num of /
-													tokens[nr_token++].type='/';
-								case 40:			//ascii num of (
-													tokens[nr_token++].type='(';
-								case 41:			//ascii num of )
-													tokens[nr_token++].type=')';
+													break;
+								case '-':			
+													tmp_token.type ='-';				 
+													tokens[nr_token++]=tmp_token;
+													break;
+								case '*':			//ascii num of *
+													tmp_token.type ='*';				 
+													tokens[nr_token++]=tmp_token;
+													break;
+								case '/':
+													tmp_token.type ='/';				 
+													tokens[nr_token++]=tmp_token;
+													break;
+								case '(':
+													tmp_token.type ='(';				 
+													tokens[nr_token++]=tmp_token;
+													break;
+								case ')':
+													tmp_token.type =')';				 
+													tokens[nr_token++]=tmp_token;
+													break;
           default:
 													printf("No rules!\n");
-													assert(0);
+													break;
         }
         break;
       }
