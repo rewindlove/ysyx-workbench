@@ -72,6 +72,15 @@ static int cmd_info(char *args){
 					print_wp();			*/
 	return 0;
 }
+ static int cmd_p(char *args){
+ 		char s[20];
+		int sum1;
+		bool a=0;
+		sscanf(args,"%s",s);
+		sum1 = expr(s,&a);
+		printf("ans:%d",sum1);
+		return 0;
+ }
 
 static int cmd_help(char *args);
 static int cmd_x(char *args){
@@ -101,7 +110,8 @@ static struct {
   /* TODO: Add more commands */
 	{ "si","单步执行", cmd_si },
 	{"info","打印寄存器状态",cmd_info},
-	{"x","扫描内存",cmd_x}
+	{"x","扫描内存",cmd_x},
+	{"p","单步执行",cmd_p}
 
 };
 

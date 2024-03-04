@@ -105,34 +105,36 @@ static bool make_token(char *e) {
         switch (rules[i].token_type) {
 								case 256:break;
 								case 43:					//ascii num of +
-													tokens[nr_token].type=43;break;
+													tokens[nr_token++].type='+';break;
 								case 255:
-													tokens[nr_token].type=255;break;
+													tokens[nr_token++].type=255;break;
 								case 254:
-													tokens[nr_token].type=254;break;
+													tokens[nr_token++].type=254;break;
 								case 253:
 													tokens[nr_token].type=253;
 													strncpy(tokens[nr_token].str,substr_start,substr_len);		//用strncpy函数将数字复制到tokens数组中
+																																						nr_token++;
 													break;
 								case 252:					
 													tokens[nr_token].type=252;
 													strncpy(tokens[nr_token].str,substr_start,substr_len);
+													nr_token++;
 								case 45:			//ascii num of -
-													tokens[nr_token].type=45;
+													tokens[nr_token++].type='-';
 								case 42:			//ascii num of *
-													tokens[nr_token].type=42;
+													tokens[nr_token++].type='*';
 								case 47:			//ascii num of /
-													tokens[nr_token].type=47;
+													tokens[nr_token++].type='/';
 								case 40:			//ascii num of (
-													tokens[nr_token].type=40;
+													tokens[nr_token++].type='(';
 								case 41:			//ascii num of )
-													tokens[nr_token].type=41;
-          default: break;
+													tokens[nr_token++].type=')';
+          default:
+													printf("No rules!\n");
+													assert(0);
         }
         break;
       }
-				if(rules[i].token_type != 256)
-								nr_token++;
     }
 
     if (i == NR_REGEX) {
@@ -144,15 +146,99 @@ static bool make_token(char *e) {
   return true;
 }
 
+	static bool check_parentheses(int p,int q){
+		int i,cnt=0;
+		if(tokens[p].type!='('||tokens[q].type!=')')		//首尾没有括号
+						return false;
+		for(i=p;i<=q;i++){
+			if(tokens[i].type=='(')
+							cnt++;
+			else if(tokens[i].type==')')
+							cnt--;
+			if(cnt==0&&i<q)		//左右括号数相等，括号匹配
+							return true;
+		}
+		if(cnt<0)
+						return false;
+		return true;
+	}
+	int dominant_operator(int p,int q){
+					int i,dom=p,lpare=0;
+					for(i=p;i<=q;i++){
+									if(tokens[i].type == '('){	
+											lpare+=1;
+											i++;
+											while(1){
+												if(tokens[i].type == '(')
+																lpare+=1;
+												else if(tokens[i].type == ')')
+																lpare--;
+												i++;
+												if(lpare == 0)
+															break;
+											}
+										if(i>q) break;
+									}
+									else if(tokens[i].type == TK_NUM) continue;
+									else if(tokens[i].type == '+'||tokens[i].type == '-'){
+												dom=i;
+									}
+									else if(tokens[i].type == '*'||tokens[i].type == '/'){
+												dom=i;
+									}
+					}
+		return dom;
+}
 
-word_t expr(char *e, bool *success) {
-  if (!make_token(e)) {
+  /* TODO: Insert codes to evaluate the expression. */
+  uint32_t eval(int p,int q){
+					if(p>q){
+						assert(0);
+						return -1;
+					}
+					else if(p==q){
+						 int num=atoi(tokens[p].str);
+						 return num;
+					}
+					else if(check_parentheses(p,q)==true){
+						return eval(p+1,q-1);
+					}
+					else{
+						int op=-1;float val1,val2;
+						op=dominant_operator(p,q);
+						int op_type=tokens[op].type;
+						val1=eval(p,op-1);
+						val2=eval(op+1,q);
+						switch(op_type){
+										case '+':return val1+val2;
+										case '-':return val1-val2;
+										case '*':return val1*val2;
+										case '/':return val1/val2;
+										default:assert(0);
+						}
+					}
+	}
+
+uint32_t expr(char *e, bool *success) {
+  if (!make_token(e)){
     *success = false;
     return 0;
   }
-
-  /* TODO: Insert codes to evaluate the expression. */
-  TODO();
-
-  return 0;
+	int i,brack = 0;
+	for(i=0;i<nr_token;i++){
+			if(tokens[i].type == '(') brack++;
+			if(tokens[i].type == ')') brack--;
+			if(brack<0){
+				*success = false;
+				return 0;
+			}
+	}
+	if(brack!=0){
+		*success = false;
+		return 0;
+	}
+	*success=true;
+	uint32_t sum1=0;
+	sum1=eval(0,nr_token-1);
+	return sum1;
 }
