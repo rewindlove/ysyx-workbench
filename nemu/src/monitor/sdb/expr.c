@@ -19,6 +19,7 @@
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
+#include <stdlib.h>
 
 enum {
   TK_NOTYPE = 256, TK_EQ = 255, TK_NEQ = 254, TK_NUM = 253, TK_HEXNUM = 252,TK_MINUS=251
@@ -222,27 +223,23 @@ static bool make_token(char *e) {
 						return -1;
 					}
 					else if(p==q){
-						 int num=atoi(tokens[p].str);
-						 return num;
+									int i=p-1;
+									uint32_t num;
+						if(tokens[i].type==251){
+									 	num=-atoi(tokens[p].str);
+									}
+						else{
+										num=atoi(tokens[p].str);
+						}
+						return num;
 					}
 					else if(check_parentheses(p,q)==true){
 						return eval(p+1,q-1);
 					}
 					else{
-						int op=-1,i;
+						int op=-1;
 						op=dominant_operator(p,q);
 						int op_type=tokens[op].type;
-
-						if(tokens[op].type == 251){
-							for(i=op;i<nr_token;i++){
-										if(tokens[i].type == TK_NUM){
-												sscanf(tokens[i].str,"%x",&result);
-												break;
-										}
-							}
-							for(;i>0;i--) result = -result;
-							return result;
-						}
 						uint32_t val1,val2;
 						val1=eval(p,op-1);
 						val2=eval(op+1,q);
