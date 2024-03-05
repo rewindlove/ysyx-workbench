@@ -223,14 +223,8 @@ static bool make_token(char *e) {
 						return -1;
 					}
 					else if(p==q){
-									int i=p-1;
 									uint32_t num;
-						if(tokens[i].type==TK_MINUS){
-									 	num=-atoi(tokens[p].str);
-									}
-						else{
 										num=atoi(tokens[p].str);
-						}
 						return num;
 					}
 					else if(check_parentheses(p,q)==true){
