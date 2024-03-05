@@ -232,7 +232,7 @@ static bool make_token(char *e) {
 						int op=-1,i;
 						op=dominant_operator(p,q);
 						int op_type=tokens[op].type;
-						uint32_t result;
+
 						if(tokens[op].type == 251){
 							for(i=op;i<nr_token;i++){
 										if(tokens[i].type == TK_NUM){
