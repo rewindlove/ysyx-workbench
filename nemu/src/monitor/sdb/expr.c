@@ -46,8 +46,8 @@ static struct rule {
 	{"\\(",'('},							//left parenthesis
 	{"\\)",')'},							//right parenthesis
 	{"\\*",'*'},							//multiply
-	{"\\/",'/'},							//divice
-	{"\\-",'-'},							//minus
+	{"/",'/'},							//divice
+	{"-",'-'},							//minus
 };
 
 #define NR_REGEX ARRLEN(rules)
