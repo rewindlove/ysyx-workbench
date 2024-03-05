@@ -283,6 +283,11 @@ static bool make_token(char *e) {
 						int op=-1;
 						op=dominant_operator(p,q);
 						int op_type=tokens[op].type;
+						if(p==op||tokens[op].type==TK_MINUS){
+								uint32_t ans1=eval(op+1,q);
+								switch(tokens[op].type)
+										case TK_MINUS:return -ans1;
+						}
 						uint32_t val1,val2;
 						val1=eval(p,op-1);
 						val2=eval(op+1,q);
@@ -290,15 +295,16 @@ static bool make_token(char *e) {
 										case '+':return val1+val2;
 										case '-':return val1-val2;
 										case '*':return val1*val2;
-										case '/':{if(val2==0){
+										case '/':{
+																	if(val2==0){
 														 			printf("除数不能为0\n");
 																	assert(0);
 														 		}
 																	else return val1/val2;
-													   }
-										case TK_MINUS:return -val2;
-										default:assert(0);
-						}
+														 }
+										default:printf("no op type!\n");
+														assert(0);
+													}
 					}
 	}
 
