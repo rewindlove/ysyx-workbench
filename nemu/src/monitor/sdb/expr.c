@@ -225,7 +225,7 @@ static bool make_token(char *e) {
 					else if(p==q){
 									int i=p-1;
 									uint32_t num;
-						if(tokens[i].type==251){
+						if(tokens[i].type==TK_MINUS){
 									 	num=-atoi(tokens[p].str);
 									}
 						else{
