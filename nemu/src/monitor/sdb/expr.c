@@ -283,11 +283,6 @@ static bool make_token(char *e) {
 						int op=-1;
 						op=dominant_operator(p,q);
 						int op_type=tokens[op].type;
-						if(op==p||tokens[op].type==TK_MINUS){
-								uint32_t ans=eval(op+1,q);
-								switch(tokens[op].type)
-										case TK_MINUS:return -ans;
-						}
 						uint32_t val1,val2;
 						val1=eval(p,op-1);
 						val2=eval(op+1,q);
@@ -301,6 +296,7 @@ static bool make_token(char *e) {
 														 		}
 																	else return val1/val2;
 													   }
+										case TK_MINUS:return -val2;
 										default:assert(0);
 						}
 					}
