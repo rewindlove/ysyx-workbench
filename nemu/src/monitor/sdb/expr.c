@@ -183,39 +183,88 @@ static bool make_token(char *e) {
 		return true;
 	}
 	int dominant_operator(int p,int q){
-					int i,dom=p,lpare=0;
-					for(i=p;i<=q;i++){
-									if(tokens[i].type == '('){	
-											lpare+=1;
-											i++;
-											while(1){
-												if(tokens[i].type == '(')
-																lpare+=1;
-												else if(tokens[i].type == ')')
-																lpare--;
-												i++;
-												if(lpare == 0)
-															break;
-											}
-										if(i>q) break;
-									}
-									else if(tokens[i].type == TK_NUM) continue;
-									else if(tokens[i].type == '+'||tokens[i].type == '-'){
-												dom=i;
-												break;
-									}
-									else if(tokens[i].type == '*'||tokens[i].type == '/'){
-												dom=i;
-												break;
-									}
-									else if(tokens[i].type == 251){
-													dom = i;
-													break;
-									}
+			int i;
+			int pos=1;
+			int pri=0;
+			int pare=0;
+			for(i=q;i>=1;i--){
+					if(tokens[i].type == ')') pare++;
+					if(tokens[i].type == '(') pare--;
+					if(pare!=0) continue;
+					switch(tokens[i].type){
+									case'+':{
+														if(pri<4){
+																pos=i;
+																pri=4;
+														}
+														break;
+													}
+									case'-':{
+														if(pri<4){
+																pos=i;
+																pri=4;
+														}
+														break;
+													}
+									case'*':{
+														if(pri<3){
+																pos=i;
+																pri=3;
+														}
+														break;
+													}
+									case'/':{
+														if(pri<3){
+																pos=i;
+																pri=3;
+														}
+														break;
+													}
+									case TK_EQ:{
+														if(pri<7){
+																pos=i;
+																pri=7;
+														}
+														break;
+													}
+									case TK_NEQ:{
+														if(pri<2){
+																pos=i;
+																pri=2;
+														}
+														break;
+													}
+									case TK_MINUS:{
+														if(pri<2){
+																pos=i;
+																pri=2;
+														}
+														break;
+													}
+									default:break;
 					}
-		return dom;
-}
 
+			}
+			if(pri==0) return 0;
+			if(pri==2){
+					pri=0;
+					for(i=p;i<=q;i++){
+						if(tokens[i].type == ')') pare++;
+						if(tokens[i].type == '(') pare--;
+						if(pare!=0) continue;
+						switch(tokens[i].type){
+									case TK_MINUS:{
+														if(pri<4){
+																pos=i;
+																pri=2;
+														}
+														break;
+													}
+					}
+			}
+	}
+			return pos;
+}
   /* TODO: Insert codes to evaluate the expression. */
   uint32_t eval(int p,int q){
 					if(p>q){
