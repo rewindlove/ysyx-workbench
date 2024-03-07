@@ -280,9 +280,7 @@ static bool make_token(char *e) {
 						return eval(p+1,q-1);
 					}
 					else{
-						int op=-1;
-						op=dominant_operator(p,q);
-						int op_type=tokens[op].type;
+						int op=dominant_operator(p,q);
 						if(p==op||tokens[op].type==TK_MINUS){
 								uint32_t ans1=eval(op+1,q);
 								switch(tokens[op].type)
@@ -291,7 +289,7 @@ static bool make_token(char *e) {
 						uint32_t val1,val2;
 						val1=eval(p,op-1);
 						val2=eval(op+1,q);
-						switch(op_type){
+						switch(tokens[op].type){
 										case '+':return val1+val2;
 										case '-':return val1-val2;
 										case '*':return val1*val2;
