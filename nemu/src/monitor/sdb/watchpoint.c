@@ -67,3 +67,13 @@ void free_wp(WP *wp){
 		wp->value=0;
 		wp->exp[0] = '\0';
 }
+void print_wp(){
+		WP* h = head;
+		if(h == NULL)
+						printf("No watchpoint!\n");
+		while(h!=NULL)
+		{
+				printf("Watchpoint %d :%s. Value:%d \n",h->NO,h->exp,h->value);
+				h=h->next;
+		}
+}

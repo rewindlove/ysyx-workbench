@@ -68,8 +68,8 @@ static int cmd_info(char *args){
 					printf("No args.\n");
 	else if(strcmp(args,"r")==0)
 					isa_reg_display();
-/*	else if(strcmp(args,"w")==0)
-					print_wp();			*/
+	else if(strcmp(args,"w")==0)
+					print_wp();
 	return 0;
 }
  static int cmd_p(char *args){
