@@ -30,85 +30,89 @@ static char *code_format =
 "  printf(\"%%u\", result); "
 "  return 0; "
 "}";
-int index_buf=0;
-int choose(int n){
-		int flag = rand()%3;
-		printf("index_buf=%d,flag=%d\n",index_buf,flag);
-		return flag;
-}
-void gen_num(){
-	int num =rand()%100;
-	int num_size = 0;
-	int num_tmp = num;
-	while(num_tmp){
-			num_tmp/=10;
-			num_size++;
-	}
-	int x = 1;while(num_size)
-    {
-	x *= 10;
-	num_size -- ;
-    }
-    x /= 10;
-    while(num)
-    {
-	char c = num / x + '0';
-	num %= x;
-	x /= 10;
-	buf[index_buf ++] = c;
-    }
-}
-void gen(char c){
-		buf[index_buf++]=c;
-}
-static void gen_rand_op(){
-		char op[4]={'+','-','*','/'};
-		int op_position =rand()%4;
-		buf[index_buf++]=op[op_position];
+
+static int choose(int n) {
+  return rand() % n;
 }
 
+static void gen_num() {
+  sprintf(buf + strlen(buf), "%uu", (unsigned int)choose(100));
+  buf[strlen(buf)] = '\0';
+}
 
-static void gen_rand_expr() {
- // buf[0] = '\0';
- 		if(index_buf>65530)
-						printf("overSize\n");
-		switch(choose(3)){
-				case 0:gen_num();break;
-				case 1:gen('(');gen_rand_expr();break;
-				default:gen_rand_expr();gen_rand_op();gen_rand_expr();break;
-		}
+static void gen(char a) {
+  sprintf(buf + strlen(buf), "%c", a);
+  buf[strlen(buf)] = '\0';
+}
+
+static void gen_rand_op() {
+  char opt = 0;
+  switch (choose(4)) {
+    case 0: opt = '+'; break;
+    case 1: opt = '-'; break;
+    case 2: opt = '*'; break;
+    case 3: opt = '/'; break;
+  }
+  sprintf(buf + strlen(buf), "%c", opt);
+  buf[strlen(buf)] = '\0';
+}
+
+static inline void gen_rand_expr() {
+  if (strlen(buf) < 100) {
+    switch (choose(3)) {
+      case 0: gen_num(); break;
+      case 1: gen('('); gen_rand_expr(); gen(')'); break;
+      default: gen_rand_expr(); gen_rand_op(); gen_rand_expr(); break;
+    }
+  } else {
+    gen_num();
+  }
+  buf[strlen(buf)] = '\0';
+}
+
+void remove_u(char *p) {
+  char *q = p;
+  while ((q = strchr(q, 'u')) != NULL) {
+    // reuse code_buf
+    strcpy(code_buf, q + 1);
+    strcpy(q, code_buf);
+  }
 }
 
 int main(int argc, char *argv[]) {
-				 int seed = time(0);
-    srand(seed);
-    int loop = 1;
-    if (argc > 1) {
-	sscanf(argv[1], "%d", &loop);
-    }
-    int i;
-    for (i = 0; i < loop; i ++) {
-	gen_rand_expr();
-	buf[index_buf] = '\0';
-	sprintf(code_buf, code_format, buf);
+  int seed = time(0);
+  srand(seed);
+  int loop = 1;
+  if (argc > 1) {
+    sscanf(argv[1], "%d", &loop);
+  }
+  int i;
+  for (i = 0; i < loop; i ++) {
+    memset(buf,0,sizeof(buf));
+    gen_rand_expr();
 
-	FILE *fp = fopen("/tmp/.code.c", "w");
-	assert(fp != NULL);
-	fputs(code_buf, fp);
-	fclose(fp);
+    sprintf(code_buf, code_format, buf);
 
-	int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
-	if (ret != 0) continue;
+    FILE *fp = fopen("/tmp/.code.c", "w");
+    assert(fp != NULL);
+    fputs(code_buf, fp);
+    fclose(fp);
 
-	fp = popen("/tmp/.expr", "r");
-	assert(fp != NULL);
+    int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
+    if (ret != 0) continue;
 
-	int result;
-	ret = fscanf(fp, "%d", &result);
-	pclose(fp);
+    fp = popen("/tmp/.expr", "r");
+    assert(fp != NULL);
 
-	printf("%u %s\n", result, buf);
-	index_buf = 0;
-    }
-    return 0;
+    int result;
+    ret = fscanf(fp, "%d", &result);
+    if (ret != 1) continue;
+    ret = pclose(fp);
+    if (ret != 0) continue;
+
+    remove_u(buf);
+
+    printf("%u %s\n", result, buf);
+  }
+  return 0;
 }

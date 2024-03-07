@@ -319,7 +319,7 @@ uint32_t expr(char *e, bool *success) {
 				*success = false;
 				return 0;
 			}
-			if(tokens[i].type == '-'&&(i == 0||(tokens[i-1].type!=')'&&tokens[i-1].type!=TK_NUM&&tokens[i-1].type!=TK_HEXNUM)))
+			if(tokens[i].type == '-'&&(i == 0||(tokens[i-1].type!=')'&&tokens[i-1].type!=TK_NUM&&tokens[i-1].type!=TK_HEXNUM&&tokens[i-1].type=='+')))
 							tokens[i].type = TK_MINUS;
 	}
 	if(brack!=0){
