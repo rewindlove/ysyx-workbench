@@ -77,3 +77,11 @@ void print_wp(){
 				h=h->next;
 		}
 }
+WP* delete_wp(int pos,bool* f){
+		WP* del=head;
+		while(del!=NULL&&del->NO != pos){
+				del=del->next;
+		}
+		if(del==NULL) *f=false;
+		return del;
+}

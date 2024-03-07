@@ -88,6 +88,21 @@ static int cmd_w(char *args){
 		printf("Set watchpoint %d:%s succefully!",wp->NO,wp->exp);
 		return 0;
 }
+static int cmd_d(char *args){
+		if(args==NULL)
+						printf("No args!\n");
+		int pos;
+		sscanf(args,"%d",&pos);
+		bool f=true;
+		WP* wp=delete_wp(pos,&f);
+		if(f==false){
+			printf("Can`t find the point!\n");
+			return 0;
+		}
+		free_wp(wp);
+		printf("Succefully delete!\n");
+		return 0;
+}
 
 static int cmd_help(char *args);
 static int cmd_x(char *args){
@@ -119,7 +134,8 @@ static struct {
 	{"info","打印寄存器状态",cmd_info},
 	{"x","扫描内存",cmd_x},
 	{"p","单步执行",cmd_p},
-	{"w","设置监视点",cmd_w}
+	{"w","设置监视点",cmd_w},
+	{"d","删除监视点",cmd_d}
 
 };
 
