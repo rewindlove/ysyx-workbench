@@ -85,7 +85,7 @@ static int cmd_w(char *args){
 		if(args==NULL)
 						printf("No args!\n");
 		WP* wp=new_wp(args);
-		printf("Set watchpoint %d:%s succefully!",wp->NO,wp->exp);
+		printf("Set watchpoint %d:%s succefully!\n",wp->NO,wp->exp);
 		return 0;
 }
 static int cmd_d(char *args){
