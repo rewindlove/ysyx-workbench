@@ -341,7 +341,7 @@ static bool make_token(char *e) {
 														 		}
 																	else return val1/val2;
 														 }
-										case 255:return val1=val2;
+										case 255:return val1==val2;
 										case 254:return val1!=val2;
 										case 249:return val1&&val2;
 										case 248:return val1||val2;
