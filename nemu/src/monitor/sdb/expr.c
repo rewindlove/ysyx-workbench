@@ -22,7 +22,7 @@
 #include <stdlib.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ = 255, TK_NEQ = 254, TK_NUM = 253, TK_HEXNUM = 252,TK_MINUS=251
+  TK_NOTYPE = 256, TK_EQ = 255, TK_NEQ = 254, TK_NUM = 253, TK_HEXNUM = 252,TK_MINUS=251,TK_NOT=250,TK_AND=249,TK_OR=248
 
   /* TODO: Add more token types */
 
@@ -48,6 +48,9 @@ static struct rule {
 	{"\\*",'*'},							//multiply
 	{"\\/",'/'},							//divice
 	{"\\-",'-'},							//minus
+	{"&&",TK_AND},
+	{"!",TK_NOT},
+	{"\\|\\|",TK_OR}
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -109,22 +112,22 @@ static bool make_token(char *e) {
 													tmp_token.type ='+';				 
 													tokens[nr_token++]=tmp_token
 													;break;
-								case 255:
+								case 255:		//equal
 													tokens[nr_token].type=255;
 													strcpy(tokens[nr_token].str, "==");
 													nr_token++;
 													break;
-								case 254:
+								case 254:		//no equal
 													tokens[nr_token].type=254;
 													strcpy(tokens[nr_token].str, "!=");
 													nr_token++;
 													break;
-								case 253:
+								case 253:		//number
 													tokens[nr_token].type=253;
 													strncpy(tokens[nr_token].str,&e[position - substr_len],substr_len);		//用strncpy函数将数字复制到tokens数组中
 													nr_token++;
 													break;
-								case 252:					
+								case 252:			//hex number	
 													tokens[nr_token].type=252;
 													strncpy(tokens[nr_token].str,&e[position - substr_len],substr_len);		//用strncpy函数将数字复制到tokens数组中
 													nr_token++;
@@ -133,7 +136,7 @@ static bool make_token(char *e) {
 													tmp_token.type ='-';				 
 													tokens[nr_token++]=tmp_token;
 													break;
-								case '*':			//ascii num of *
+								case '*':
 													tmp_token.type ='*';				 
 													tokens[nr_token++]=tmp_token;
 													break;
@@ -148,6 +151,21 @@ static bool make_token(char *e) {
 								case ')':
 													tmp_token.type =')';				 
 													tokens[nr_token++]=tmp_token;
+													break;
+								case 250:		//not
+													tokens[nr_token].type=250;
+													strcpy(tokens[nr_token].str, "!");
+													nr_token++;
+													break;
+								case 249:		//and
+													tokens[nr_token].type=249;
+													strcpy(tokens[nr_token].str, "&&");
+													nr_token++;
+													break;
+								case 248:		//or
+													tokens[nr_token].type=248;
+													strcpy(tokens[nr_token].str, "||");
+													nr_token++;
 													break;
           default:
 													printf("No rules!\n");
@@ -192,6 +210,41 @@ static bool make_token(char *e) {
 					if(tokens[i].type == '(') pare--;
 					if(pare!=0) continue;
 					switch(tokens[i].type){
+									case TK_EQ:{
+																if(pri<7){
+																		pos=i;
+																		pri=7;
+																}
+																break;
+														 }
+									case TK_NEQ:{
+																if(pri<7){
+																		pos=i;
+																		pri=7;
+																}
+																break;
+														 }
+									case TK_AND:{
+																if(pri<11){
+																		pos=i;
+																		pri=11;
+																}
+																break;
+															}
+									case TK_OR:{
+																if(pri<12){
+																		pos=i;
+																		pri=12;
+																}
+																break;
+														 }
+									case TK_NOT:{
+																if(pri<2){
+																		pos=i;
+																		pri=2;
+																}
+																break;
+														 }
 									case'+':{
 														if(pri<4){
 																pos=i;
@@ -217,20 +270,6 @@ static bool make_token(char *e) {
 														if(pri<3){
 																pos=i;
 																pri=3;
-														}
-														break;
-													}
-									case TK_EQ:{
-														if(pri<7){
-																pos=i;
-																pri=7;
-														}
-														break;
-													}
-									case TK_NEQ:{
-														if(pri<2){
-																pos=i;
-																pri=2;
 														}
 														break;
 													}
@@ -281,10 +320,12 @@ static bool make_token(char *e) {
 					}
 					else{
 						int op=dominant_operator(p,q);
-						if(p==op||tokens[op].type==TK_MINUS){
+						if(p==op||tokens[op].type==TK_MINUS||tokens[op].type==TK_NOT){
 								uint32_t ans1=eval(op+1,q);
-								switch(tokens[op].type)
+								switch(tokens[op].type){
 										case TK_MINUS:return -ans1;
+										case TK_NOT:return !ans1;
+								}
 						}
 						uint32_t val1,val2;
 						val1=eval(p,op-1);
@@ -300,6 +341,10 @@ static bool make_token(char *e) {
 														 		}
 																	else return val1/val2;
 														 }
+										case 255:return val1=val2;
+										case 254:return val1!=val2;
+										case 249:return val1&&val2;
+										case 248:return val1||val2;
 										default:printf("no op type!\n");
 														assert(0);
 													}
@@ -319,7 +364,7 @@ uint32_t expr(char *e, bool *success) {
 				*success = false;
 				return 0;
 			}
-			if(tokens[i].type == '-'&&(i == 0||(tokens[i-1].type!=')'&&tokens[i-1].type!=TK_NUM&&tokens[i-1].type!=TK_HEXNUM&&tokens[i-1].type=='+')))
+			if(tokens[i].type == '-'&&(i == 0||(tokens[i-1].type!=')'&&tokens[i-1].type!=TK_NUM&&tokens[i-1].type!=TK_HEXNUM)))
 							tokens[i].type = TK_MINUS;
 	}
 	if(brack!=0){
