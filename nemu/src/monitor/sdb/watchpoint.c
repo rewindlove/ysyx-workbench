@@ -17,14 +17,6 @@
 
 #define NR_WP 32
 
-typedef struct watchpoint {
-  int NO;
-  struct watchpoint *next;
-
-  /* TODO: Add more members if necessary */
-
-} WP;
-
 static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;
 
@@ -41,3 +33,37 @@ void init_wp_pool() {
 
 /* TODO: Implement the functionality of watchpoint */
 
+WP* new_wp(char * exp){
+		assert(free_!=NULL);
+		WP *tmp = free_;
+		free_ = free_->next;
+		tmp->next = NULL;		//将第一个结点从free链表中断开
+		bool success = false;
+		strcpy(tmp->exp,exp);
+		tmp->value = expr(tmp->exp,&success);
+		assert(success);
+
+		if(head == NULL)		//若head为空，则将tmp结点设置为头结点
+						head = tmp;
+		else{								//若head不为空，则将tmp结点接到head链表的最后一个位置
+				WP *p = head;
+				while(p->next)
+								p = p->next;
+				p->next = tmp;
+		}
+		return tmp;
+}
+void free_wp(WP *wp){
+		assert(head!=NULL);
+		assert(wp!=NULL);
+		if(wp==head) head=head->next;
+		else{
+				WP *p= head;
+				while(p!=NULL&&p->next!=wp) p = p->next;
+				p->next = wp->next;
+		}
+		wp->next=free_;
+		free_=wp;
+		wp->value=0;
+		wp->exp[0] = '\0';
+}

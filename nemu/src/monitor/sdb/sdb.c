@@ -81,6 +81,13 @@ static int cmd_info(char *args){
 		printf("ans:%d\n",sum1);
 		return 0;
  }
+static int cmd_w(char *args){
+		if(args==NULL)
+						printf("No args!\n");
+		WP* wp=new_wp(args);
+		printf("Set watchpoint %d:%s succefully!",wp->NO,wp->exp);
+		return 0;
+}
 
 static int cmd_help(char *args);
 static int cmd_x(char *args){
@@ -111,7 +118,8 @@ static struct {
 	{ "si","单步执行", cmd_si },
 	{"info","打印寄存器状态",cmd_info},
 	{"x","扫描内存",cmd_x},
-	{"p","单步执行",cmd_p}
+	{"p","单步执行",cmd_p},
+	{"w","设置监视点",cmd_w}
 
 };
 
