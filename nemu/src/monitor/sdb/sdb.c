@@ -96,7 +96,7 @@ static int cmd_d(char *args){
 		bool f=true;
 		WP* wp=delete_wp(pos,&f);
 		if(f==false){
-			printf("Can`t find the point!\n");
+			printf("Can`t find the Watchpoint!\n");
 			return 0;
 		}
 		free_wp(wp);
