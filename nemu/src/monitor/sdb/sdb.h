@@ -17,10 +17,7 @@
 #define __SDB_H__
 
 #include <common.h>
-
-word_t expr(char *e, bool *success);
-
-
+#define NR_WP 32
 typedef struct watchpoint {
   int NO;
   struct watchpoint *next;
@@ -31,6 +28,11 @@ typedef struct watchpoint {
 	uint32_t value;		//value存储表达式结果
 	int new_val;
 } WP;
+
+extern WP wp_pool[NR_WP];
+
+word_t expr(char *e, bool *success);
+
 
 WP* new_wp(char *exp);
 WP* delete_wp(int pos,bool* f);
