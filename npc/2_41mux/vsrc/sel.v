@@ -1,4 +1,4 @@
-module sw1(
+module sel(
 				input clk,
 				input rst,
 				input [9:0]sw,
@@ -13,10 +13,10 @@ module sw1(
 				reg [1:0]f0;
 				always @ (posedge clk) begin
 								case(y[1:0])
-												2'b00:assign f0=x0[1:0];
-												2'b01:assign f0=x1[1:0];
-												2'b10:assign f0=x2[1:0];
-												2'b11:assign f0=x3[1:0];
+												2'b00:f0=x0[1:0];
+												2'b01:f0=x1[1:0];
+												2'b10:f0=x2[1:0];
+												2'b11:f0=x3[1:0];
 								endcase
 				end
 				assign f=f0;

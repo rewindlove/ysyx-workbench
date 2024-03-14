@@ -1,8 +1,8 @@
 module top(
 		input clk,
 		input rst,
-		input [9:0]sw,
-		output [1:0]f,
+		input [8:0]sw,
+		output [2:0]y,
 		output [7:0]seg0,
 		output [7:0]seg1,
 		output [7:0]seg2,
@@ -12,16 +12,16 @@ module top(
 		output [7:0]seg6,
 		output [7:0]seg7
 );
-	sel sel(
+	encode encode(
 					.clk(clk),
 					.rst(rst),
 					.sw(sw),
-					.f(f)
+					.y(y)
 	);
 	seg seg(
 					.clk(clk),
 					.rst(rst),
-					.f(f),
+					.y(y),
 					.seg0(seg0),
 					.seg1(seg1),
 					.seg2(seg2),

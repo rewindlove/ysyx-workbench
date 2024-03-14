@@ -1,7 +1,7 @@
 module seg(
 	input clk,
 	input rst,
-	input [1:0]f,
+	input [2:0]y,
 	output [7:0]seg0,
 	output [7:0]seg1,
 	output [7:0]seg2,
@@ -22,8 +22,8 @@ module seg(
 			segs[5]=8'b11111111;
 			segs[6]=8'b11111111;
 			segs[7]=8'b11111111;
-			for(i=0;i<2;i++)	begin
-							if(f[i]==0)
+			for(i=0;i<4;i++)	begin
+							if(y[i]==0)
 											segs[i]=8'b00000011;
 							else
 											segs[i]=8'b10011111;

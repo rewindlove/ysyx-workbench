@@ -18,8 +18,7 @@
 #include <cpu/difftest.h>
 #include <locale.h>
 #include "isa.h"
-#include "~/ysyx-workbench/nemu/src/monitor/sdb/sdb.h"
-
+#include "/home/lius/ysyx-workbench/nemu/src/monitor/sdb/sdb.h"
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.
@@ -40,16 +39,6 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
-	for(int i=0;i<NR_WP;i++){
-						bool success = false;
-						int tmp = expr(wp_pool[i].exp,&success);
-						if(success)
-										if(tmp != wp_pool[i].value){
-											nemu_state.state = NEMU_STOP;
-											printf("error,different value!\n");
-											return ;
-										}
-					}
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {

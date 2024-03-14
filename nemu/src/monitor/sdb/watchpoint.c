@@ -15,11 +15,9 @@
 
 #include "sdb.h"
 
-#define NR_WP 32
-
-static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;
 
+WP wp_pool[NR_WP]={};
 void init_wp_pool() {
   int i;
   for (i = 0; i < NR_WP; i ++) {
