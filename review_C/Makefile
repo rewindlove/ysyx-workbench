@@ -1,5 +1,12 @@
-test:test.c
-	gcc test.c -o test
-.PHONY:clean
+CFILES := $(wildcard *.c)
+EXES := $(patsubst %.c, %, $(CFILES))
+CC=gcc
+CFLAGS=-Wall -g
+%:%.c
+	$(CC) $(CFLAGS) -o $* $<
+all:$(EXES)
+	
 clean:
-	rm -rf test
+	rm -rf $(EXES)
+
+.PHONY:all clean
