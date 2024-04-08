@@ -307,8 +307,7 @@ static bool make_token(char *e) {
   /* TODO: Insert codes to evaluate the expression. */
   uint32_t eval(int p,int q){
 					if(p>q){
-						assert(0);
-						return -1;
+						return 0;
 					}
 					else if(p==q){
 									uint32_t num;
