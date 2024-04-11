@@ -194,9 +194,9 @@ static bool make_token(char *e) {
 			else if(tokens[i].type==')')
 							cnt--;
 			if(cnt==0&&i<q)		//左右括号数相等，括号匹配
-							return true;
+							return false;
 		}
-		if(cnt<0)
+		if(cnt!=0)
 						return false;
 		return true;
 	}
