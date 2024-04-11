@@ -18,11 +18,12 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
-#include <memory/paddr.h>
 static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
+word_t vaddr_read(vaddr_t addr, int len);
+word_t paddr_read(paddr_t addr, int len);
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -72,15 +73,22 @@ static int cmd_info(char *args){
 					print_wp();
 	return 0;
 }
- static int cmd_p(char *args){
- 		char s[20];
-		int sum1;
-		bool a=0;
-		sscanf(args,"%s",s);
-		sum1 = expr(s,&a);
-		printf("ans:%d\n",sum1);
+static int cmd_p(char *args){
+		bool success = true;
+		if (args == NULL){
+			Log("Loss parameter EXPR");
+			return 0;
+		}
+		word_t ans = expr(args, &success);
+		if(success){
+				Log(ANSI_FG_GREEN"Successfully evaluate the EXPR!"ANSI_NONE);
+				Log(ANSI_FG_MAGENTA"EXPR: %s"ANSI_NONE, args);
+				Log(ANSI_FG_MAGENTA"ANSWER:\n[Dec] unsigned: %u signed: %d\n[Hex]"FMT_WORD ANSI_NONE, ans, ans, ans);
+		}
+		else
+				Log(ANSI_FG_RED"EXPR is illegal!"ANSI_NONE);
 		return 0;
- }
+}
 static int cmd_w(char *args){
 		if(args==NULL)
 						printf("No args!\n");
@@ -105,7 +113,8 @@ static int cmd_d(char *args){
 }
 
 static int cmd_help(char *args);
-static int cmd_x(char *args){
+
+/*static int cmd_x(char *args){
 	char* n = strtok(args," ");
 	char* baseaddr = strtok(NULL," ");
 	int len = 0;
@@ -118,6 +127,32 @@ static int cmd_x(char *args){
 		addr=addr+4;
 	}
 	return 0;
+}
+*/
+static int cmd_x(char* args) {
+  char* N = strtok(NULL, " ");
+  char* EXPR = strtok(NULL, " ");
+  int num;
+  bool success = true;
+  vaddr_t addr;
+  if (N == NULL || EXPR == NULL) {
+      Log("Need two parameters N and EXPR");
+      return 0;
+  }
+  sscanf(N, "%d", &num);
+  // sscanf(EXPR, "%x", &addr);
+  addr = expr(EXPR, &success);
+  if(success) {
+    for (int i = 0; i < num; i++) {
+        word_t data = vaddr_read(addr + i * 4, 4);
+        printf("addr: " FMT_PADDR, addr + i * 4);
+        printf("\tdata: " FMT_WORD, data);
+        printf("\n");
+    }
+  }
+  else
+    Log(ANSI_FG_RED"EXPR is illegal!"ANSI_NONE);
+  return 0;
 }
 
 static struct {
