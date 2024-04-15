@@ -76,14 +76,14 @@ static int cmd_info(char *args){
 static int cmd_p(char *args){
 		bool success = true;
 		if (args == NULL){
-			Log("Loss parameter EXPR");
+			Log(ANSI_FG_RED"Loss parameter EXPR"ANSI_NONE);
 			return 0;
 		}
 		word_t ans = expr(args, &success);
 		if(success){
 				Log(ANSI_FG_GREEN"Successfully evaluate the EXPR!"ANSI_NONE);
-				Log(ANSI_FG_MAGENTA"EXPR: %s"ANSI_NONE, args);
-				Log(ANSI_FG_MAGENTA"ANSWER:\n[Dec] unsigned: %u signed: %d\n[Hex]"FMT_WORD ANSI_NONE, ans, ans, ans);
+				Log(ANSI_FG_GREEN"EXPR: %s"ANSI_NONE, args);
+				Log(ANSI_FG_GREEN"ANSWER:\n[Dec] unsigned: %u signed: %d\n[Hex]"FMT_WORD ANSI_NONE, ans, ans, ans);
 		}
 		else
 				Log(ANSI_FG_RED"EXPR is illegal!"ANSI_NONE);
@@ -93,7 +93,7 @@ static int cmd_w(char *args){
 		if(args==NULL)
 						printf("No args!\n");
 		WP* wp=new_wp(args);
-		printf("Set watchpoint %d:%s succefully!\n",wp->NO,wp->exp);
+		printf(ANSI_FG_GREEN"Set watchpoint %d:%s succefully!\n"ANSI_NONE,wp->NO,wp->exp);
 		return 0;
 }
 static int cmd_d(char *args){
@@ -104,11 +104,11 @@ static int cmd_d(char *args){
 		bool f=true;
 		WP* wp=delete_wp(pos,&f);
 		if(f==false){
-			printf("Can`t find the Watchpoint!\n");
+			printf(ANSI_FG_RED"Can`t find the Watchpoint!\n"ANSI_NONE);
 			return 0;
 		}
 		free_wp(wp);
-		printf("Succefully delete!\n");
+		printf(ANSI_FG_GREEN"Succefully delete!\n"ANSI_NONE);
 		return 0;
 }
 

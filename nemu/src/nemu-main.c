@@ -43,7 +43,7 @@ void test_expr() {
     int result = expr(expr_str, &success);
 
     if (success) {
-        printf("Expr: %s,\ngen_expr: %d,      result: %d\n\n", expr_str, expected, result);
+        printf("Expr: %s\ngen_expr: %d,      result: %d\n\n", expr_str, expected, result);
         if (expected != result) {
             printf("Test failed!\n");
             assert(0);

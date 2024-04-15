@@ -72,7 +72,7 @@ static inline void gen_rand_expr() {
 
 void remove_u(char *p) {
   char *q = p;
-  while ((q = strchr(q, 'u')) != NULL) {
+  while ((q = strchr(q, 'u')) != NULL) {	//查找字符串中的u并返回位置
     // reuse code_buf
     strcpy(code_buf, q + 1);
     strcpy(q, code_buf);
