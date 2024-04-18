@@ -1,6 +1,16 @@
-TOPNAME = top
+TOPNAME = ysyx_23060278_top
 NXDC_FILES = constr/top.nxdc
 INC_PATH ?=
+
+PROJ_PATH = $(shell pwd)
+
+SDC_FILE ?= $(PROJ_PATH)/constr/top.sdc
+RTL_FILES ?= $(shell find $(PROJ_PATH)/vsrc -name "*.v")
+export CLK_FREQ_MHZ ?= 500
+
+RESULT_DIR = $(PROJ_PATH)/result/gcd-$(CLK_FREQ_MHZ)MHz
+NETLIST_V  = $(RESULT_DIR)/$(TOPNAME).netlist.v
+TIMING_RPT = $(RESULT_DIR)/$(TOPNAME).rpt
 
 VERILATOR = verilator
 VERILATOR_CFLAGS += -MMD --build -cc  \
@@ -32,6 +42,7 @@ INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
 $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
+	$(call git_commit, "sim RTL")
 	@rm -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_CFLAGS) \
 		--top-module $(TOPNAME) $^ \
@@ -42,8 +53,28 @@ all: default
 
 run: $(BIN)
 	@$^
+init:
+	bash -c "$$(wget -O - https://ysyx.oscc.cc/slides/resources/scripts/init-yosys-sta.sh)"
+
+syn: $(NETLIST_V)
+$(NETLIST_V): $(RTL_FILES) yosys.tcl
+	mkdir -p $(@D)
+	echo tcl yosys.tcl $(TOPNAME) \"$(RTL_FILES)\" $(NETLIST_V) | yosys -l $(@D)/yosys.log -s -
+
+sta: $(TIMING_RPT)
+$(TIMING_RPT): $(SDC_FILE) $(NETLIST_V)
+	LD_LIBRARY_PATH=bin/ ./bin/iSTA $(PROJ_PATH)/sta.tcl $(TOPNAME) $(SDC_FILE) $(NETLIST_V)
+
+sim:
+	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
+	$(VERILATOR) --trace -cc --exe --build -j vsrc/$(TOPNAME).v csrc/main.cpp
+wave: sim
+	./obj_dir/Vtop
+	gtkwave dump.vcd
+
 
 clean:
 	rm -rf $(BUILD_DIR)
+	rm -rf result/
 
-.PHONY: default all clean run
+.PHONY: default all clean run init syn sta

@@ -1,14 +1,14 @@
-module ysyx_22040000_idu(
-	input [6:0]opcode,
+module ysyx_23060278_idu(
+	input [31:0]idu_inst,
+	input [6:0]idu_opcode,
 	input [2:0]f3,
 	input [6:0]f7,
 	output [2:0]aluctl,
-	output Regwrite,
-	output [2:0]immtype
+	output Regwrite
 );
 
 	assign aluctl = 3'b000;
 	assign Regwrite = 1;
-	assign immtype = 3'b000;
+
 
 endmodule
