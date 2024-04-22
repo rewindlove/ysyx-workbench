@@ -23,12 +23,12 @@ module ysyx_23060278_gpr(
 			end
 		end
 		else if(w_en & (rd!=0))	begin
-			reg[rd] <= w_data;	
+			regs[rd] <= w_data;	
 		end
 	end
 
 //read
-	assign rd_data1 = (rs1 == 5'd0) ? 32'd0 : regs[rs1];
+	assign rd_data1 = (rs1 == 5'd0) ? 32'd0 : regs[rs1];	//0号寄存器值恒为0
 	assign rd_data2 = (rs2 == 5'd0) ? 32'd0 : regs[rs2];
 
 endmodule

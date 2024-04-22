@@ -3,9 +3,6 @@ module ysyx_23060278_top(
 	input rst,
 	input [31:0]inst,
 	input pc_wen,
-	input [2:0]aluctl,
-	input [6:0]opcode,
-	input Regwrite,
 	output [31:0]result,
 	output [31:0]dnxt_pc,
 	output [31:0]snxt_pc,
@@ -20,6 +17,12 @@ module ysyx_23060278_top(
 	wire [4:0]rd;
 	wire [31:0]rd_data1;
 	wire [31:0]rd_data2;
+	
+	
+	wire [2:0]aluctl;
+	wire [6:0]opcode;
+	wire Regwrite;
+
 
 	wire overflow;
 	wire zf;
@@ -51,7 +54,7 @@ module ysyx_23060278_top(
 		.rst(rst),
 		.w_en(Regwrite),
 		.rs1(rs1),
-		.rs2(rs1),
+		.rs2(rs2),
 		.rd(rd),
 		.w_data(result),
 		.imm(imm),
@@ -75,8 +78,7 @@ module ysyx_23060278_top(
 		.result(result),
 		.overflow(overflow),
 		.zf(zf),
-		.nf(nf),
-		.cf(cf)
+		.nf(nf)
 		);
 
 endmodule

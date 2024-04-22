@@ -29,12 +29,12 @@ module ysyx_23060278_decoder(
 	assign rd = inst[11:7];
 
 	assign I_type = (inst[6:0] == 7'b1100111/*jalr*/) | (inst[6:0] == 7'b0000011/*load*/) | (inst[6:0] == 7'b0010011) | (inst[6:0] == 7'b0011011);
-	assign U_type = (inst[6;0] == 7'b0110111/*lui*/) | (inst[6:0] == 7'b0010111/*auipc*/);
+	assign U_type = (inst[6:0] == 7'b0110111/*lui*/) | (inst[6:0] == 7'b0010111/*auipc*/);
 	assign B_type = (inst[6:0] == 7'b1100011);
 	assign J_type = (inst[6:0] == 7'b1101111/*jal*/);
 	assign S_type = (inst[6:0] == 7'b0100011/*store*/);
 
-	assign I_imm = {20{inst[31]}, inst[31:20]};
+	assign I_imm = {{20{inst[31]}}, inst[31:20]};
 	assign U_imm = {{inst[31:12]}, {12{1'b0}}};
 	assign B_imm = {{20{inst[31]}}, inst[7], inst[30:25], inst[11:8], 1'b0};
 	assign J_imm = {{12{inst[31]}}, inst[19:12], inst[20], inst[30:21], 1'b0};
