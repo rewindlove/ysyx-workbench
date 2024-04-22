@@ -21,15 +21,16 @@
 typedef struct watchpoint {
   int NO;
   struct watchpoint *next;
-	bool flag;
 
   /* TODO: Add more members if necessary */
 	char exp[32];		//expr存储算术表达式的内容
-	uint32_t value;		//value存储表达式结果
-	int new_val;
+	word_t value;		//value存储表达式结果
 } WP;
 
+<<<<<<< HEAD
 extern WP wp_pool[NR_WP];
+=======
+>>>>>>> pa1
 
 word_t expr(char *e, bool *success);
 
@@ -38,4 +39,6 @@ WP* new_wp(char *exp);
 WP* delete_wp(int pos,bool* f);
 void free_wp(WP *wp);
 void print_wp();
+void change_check();
+
 #endif
