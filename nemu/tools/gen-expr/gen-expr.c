@@ -30,52 +30,53 @@ static char *code_format =
 "  printf(\"%%u\", result); "
 "  return 0; "
 "}";
-static int choose(int n){
-				return rand()%n; 
+
+static int choose(int n) {
+  return rand() % n;
 }
 
-static void gen_num(){
-				sprintf(buf + strlen(buf), "%uu", (unsigned int)choose(100));
-				buf[strlen(buf)] = '\0';
+static void gen_num() {
+  sprintf(buf + strlen(buf), "%uu", (unsigned int)choose(100));
+  buf[strlen(buf)] = '\0';
 }
 
-static void gen(char a){
-				sprintf(buf + strlen(buf), "%c", a);
-				buf[strlen(buf)] = '\0';
+static void gen(char a) {
+  sprintf(buf + strlen(buf), "%c", a);
+  buf[strlen(buf)] = '\0';
 }
 
-static void gen_rand_op(){
-				char op = 0;
-				switch(choose(4)){
-							case 0:op = '+';break;
-							case 1:op = '-';break;
-							case 2:op = '*';break;
-							case 3:op = '/';break;
-				}
-				sprintf(buf + strlen(buf), "%c", op);
-				buf[strlen(buf)] = '\0';
-}
-static void gen_rand_expr() {
- // buf[0] = '\0';
-				if(strlen(buf) < 100){
-							switch(choose(3)){
-									case 0:gen_num();break;
-									case 1:gen('('); gen_rand_expr(); gen(')');break;
-									default: gen_rand_expr(); gen_rand_op(); gen_rand_expr(); break;
-							}
-				}
-				else{
-						gen_num();
-				}
-				buf[strlen(buf)] = '\0';
+static void gen_rand_op() {
+  char opt = 0;
+  switch (choose(4)) {
+    case 0: opt = '+'; break;
+    case 1: opt = '-'; break;
+    case 2: opt = '*'; break;
+    case 3: opt = '/'; break;
+  }
+  sprintf(buf + strlen(buf), "%c", opt);
+  buf[strlen(buf)] = '\0';
 }
 
-void remove_u(char *p){
-				char *q =p;
-				while((q = strchr(q, 'u')) != NULL){
-						strcpy(code_buf ,q+1);
-						strcpy(q, code_buf);
-				}
+static inline void gen_rand_expr() {
+  if (strlen(buf) < 100) {
+    switch (choose(3)) {
+      case 0: gen_num(); break;
+      case 1: gen('('); gen_rand_expr(); gen(')'); break;
+      default: gen_rand_expr(); gen_rand_op(); gen_rand_expr(); break;
+    }
+  } else {
+    gen_num();
+  }
+  buf[strlen(buf)] = '\0';
+}
+
+void remove_u(char *p) {
+  char *q = p;
+  while ((q = strchr(q, 'u')) != NULL) {	//查找字符串中的u并返回位置
+    // reuse code_buf
+    strcpy(code_buf, q + 1);
+    strcpy(q, code_buf);
+  }
 }
 
 int main(int argc, char *argv[]) {
@@ -87,7 +88,7 @@ int main(int argc, char *argv[]) {
   }
   int i;
   for (i = 0; i < loop; i ++) {
-		memset(buf,0,sizeof(buf));	//初始化buf
+    memset(buf,0,sizeof(buf));
     gen_rand_expr();
 
     sprintf(code_buf, code_format, buf);
@@ -105,11 +106,11 @@ int main(int argc, char *argv[]) {
 
     int result;
     ret = fscanf(fp, "%d", &result);
-		if(ret != 1)	continue;
-    ret=pclose(fp);
-		if(ret != 0)	continue;
+    if (ret != 1) continue;
+    ret = pclose(fp);
+    if (ret != 0) continue;
 
-		remove_u(buf);
+    remove_u(buf);
 
     printf("%u %s\n", result, buf);
   }
