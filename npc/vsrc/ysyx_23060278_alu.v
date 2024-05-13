@@ -1,26 +1,17 @@
 module ysyx_23060278_alu(
-	input [31:0]a,
-	input [31:0]b,
+	input [31:0]opdata1,
+	input [31:0]opdata2,
 	input [2:0]aluctl,
-	output [31:0]result,
-	output overflow,
-	output zf,
-	output nf
+	output [31:0]result
 );
 
 	wire [31:0]add_result;
 	wire [31:0]andres;
 	wire [31:0]orres;
-	wire [31:0]b2;
-	wire [31:0]a2;
 
-
-	assign a2 = a;
-	assign b2 = b ^ {32{aluctl[0]}};
-	assign add_result = a2 + b2;
-	assign overflow = (~ (a[31] ^ b2[31])) & (a[31] ^ add_result[31]);
-	assign andres = a & b;
-	assign orres = a | b;
+	assign add_result = opdata1 + opdata2;
+	assign     andres = opdata1 & opdata2;
+	assign      orres = opdata1 | opdata2;
 
 	ysyx_23060278_MuxKey #(4, 3, 32)	alumux(result, aluctl, {
 		3'b000, add_result,
@@ -29,7 +20,5 @@ module ysyx_23060278_alu(
 		3'b011, orres
 	});
 
-	assign zf = ~(|result);
-	assign nf = result[31];
 
 endmodule

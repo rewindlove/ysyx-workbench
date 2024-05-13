@@ -11,7 +11,8 @@ static const uint32_t img[] = {
 	0b00000000010000000000000010010011,	//addi x1 x0 4
 	0b00000000001100000000000100010011,	//addi x2 x0 3
 	0b00000000001000000000000100010011,	//addi x2 x0 2
-	0b00000000110100001000000100010011	//addi x2 x1 13
+	0b00000000110100001000000100010011,	//addi x2 x1 13
+	0b00000000000000000111001100110111	//lui  x6 7
 	};
 
 	uint32_t *init_mem(size_t size){
@@ -66,7 +67,7 @@ int main(){
 
 	reset(10);
 
-	for(int i = 0; i < 4; i++){
+	for(int i = 0; i < 5; i++){
 		top->inst = pmem_read(memory,top->pc);
 		single_cycle();
 		step_and_dump_wave();
