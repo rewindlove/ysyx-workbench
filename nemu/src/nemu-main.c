@@ -20,9 +20,6 @@ void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
 
-#define TEST_EXPR 0
-
-#if TEST_EXPR
 word_t expr(char *e, bool *success);
 void init_regex();
 void test_expr() {
@@ -55,7 +52,7 @@ void test_expr() {
 
   fclose(file);
 }
-
+#ifdef CONFIG_EXPRTEST
 int main(int argc, char *argv[]) {
   init_monitor(argc, argv); 
   test_expr();
