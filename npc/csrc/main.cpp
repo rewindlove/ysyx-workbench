@@ -36,7 +36,7 @@ void step_and_dump_wave(){
 	contextp->timeInc(1);
 	tfp -> dump(contextp->time());
 	}
-void sim_init(){
+void init_sim(){
 	contextp = new VerilatedContext;
 	tfp = new VerilatedVcdC;
 	top = new Vysyx_23060278_top;
@@ -63,7 +63,7 @@ int main(){
 	uint32_t *memory;
 	memory = init_mem(3);
 
-	sim_init();
+	init_sim();
 
 	reset(10);
 
