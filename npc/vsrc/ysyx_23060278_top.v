@@ -2,7 +2,6 @@ module ysyx_23060278_top(
 	input clk,
 	input rst,
 	input [31:0]inst,
-	input pc_wen,
 	output [31:0]dnxt_pc,
 	output [31:0]snxt_pc,
 	output wire [31:0]pc

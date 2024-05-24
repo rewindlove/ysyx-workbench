@@ -6,26 +6,6 @@
 #include "verilated_vcd_c.h"
 #include "Vysyx_23060278_top.h"
 
-/*memory*/
-static const uint32_t img[] = {
-	0b00000000010000000000000010010011,	//addi x1 x0 4
-	0b00000000001100000000000100010011,	//addi x2 x0 3
-	0b00000000001000000000000100010011,	//addi x2 x0 2
-	0b00000000110100001000000100010011,	//addi x2 x1 13
-	0b00000000000000000111001100110111	//lui  x6 7
-	};
-
-	uint32_t *init_mem(size_t size){
-			uint32_t* memory = (uint32_t*)malloc(size * sizeof(uint32_t));
-			memcpy(memory, img, sizeof(img));
-			if(memory == NULL){exit(0);}
-			return memory;
-		};
-	uint32_t guest_to_host(uint32_t addr){return addr - 0x80000000;}
-	uint32_t pmem_read(uint32_t * memory, uint32_t vaddr){
-		uint32_t paddr = guest_to_host(vaddr);
-		return memory[paddr/4];
-		}
 
 VerilatedContext* contextp = NULL;
 VerilatedVcdC* tfp = NULL;
