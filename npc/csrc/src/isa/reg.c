@@ -26,13 +26,13 @@ const char *regs[] = {
 void isa_reg_display() {
 	printf("The 32 General-Purpose Register is:\n");
 	for(int i = 0;i < 32; i++){
-		printf(ANSI_FG_GREEN"%-3s: "ANSI_FG_BLUE FMT_WORD" "ANSI_NONE, regs[i], cpu.gpr[i]);
+		printf(ANSI_FG_GREEN "%-3s: " ANSI_FG_BLUE FMT_WORD " " ANSI_NONE, regs[i], cpu.gpr[i]);
 		if(i%5 == 4)
 			printf("\n");
 		}
 		printf("\n");
 		printf("Program Counter:\n");
-		printf(ANSI_FG_RED"%-3s: "ANSI_FG_BLUE FMT_WORD ANSI_NONE"\n", "$pc", cpu.pc);
+		printf(ANSI_FG_RED "%-3s: " ANSI_FG_BLUE FMT_WORD ANSI_NONE"\n", "$pc", cpu.pc);
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {

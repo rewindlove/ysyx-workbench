@@ -2,6 +2,6 @@
 
 void sdb_mainloop();
 
-void engine_start(){
+extern "C" void engine_start(){
     sdb_mainloop();
 }

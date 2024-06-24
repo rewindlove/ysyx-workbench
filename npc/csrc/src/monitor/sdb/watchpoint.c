@@ -73,12 +73,12 @@ void change_check(){
 		word_t result,pc;
 		result = expr(tmp->exp, &success);
 		if(result != tmp->value){
-			nemu_state.state = NEMU_STOP;
+			npc_state.state = NPC_STOP;
 			pc = expr("$pc", &success);
-			Log(ANSI_FG_RED"watchpoint %d has changed at address "FMT_WORD ANSI_NONE, tmp->NO, pc);
+			Log(ANSI_FG_RED "watchpoint %d has changed at address " FMT_WORD ANSI_NONE, tmp->NO, pc);
       printf("Expr: %s\n",tmp->exp);
-      printf("Old value = "FMT_WORD"\n", tmp->value);
-      printf("New value = "FMT_WORD"\n", result);
+      printf("Old value = " FMT_WORD "\n", tmp->value);
+      printf("New value = " FMT_WORD "\n", result);
 			tmp->value = result;
 			}
 			tmp = tmp->next;

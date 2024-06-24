@@ -293,7 +293,7 @@ static word_t eval(int p, int q, bool *success) {
         case '*': return val1 * val2;
         case '/': {
           if(val2 == 0) {
-            Log(ANSI_FG_RED"The divisor can't be 0"ANSI_NONE);
+            Log(ANSI_FG_RED "The divisor can't be 0" ANSI_NONE);
             *success = false;
             return 0;
           }

@@ -38,7 +38,7 @@ void init_mem(){
         p[i] = rand();
     }
 #endif // ifdef CONFIG_PMEM_RANDOM
-    Log("physical memory area [" FMT_PADDR", "FMT_WORD "]", PMEM_LEFT, PMEM_RIGHT);
+    Log("physical memory area [" FMT_PADDR ", " FMT_WORD "]", PMEM_LEFT, PMEM_RIGHT);
 }
 
 word_t paddr_read(paddr_t addr, int len){
@@ -48,7 +48,7 @@ word_t paddr_read(paddr_t addr, int len){
     return 0;
 }
 
-void paddr_write(paddr_t addrm int len, word_t data){
+void paddr_write(paddr_t addr, int len, word_t data){
     if(likely(in_pmem(addr))) {pmem_write(addr, len, data); return;}
     IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
     out_of_bound(addr);

@@ -13,7 +13,7 @@ static const uint32_t img [] = {
 
 static void restart(){
     /* Set the initial program counter */
-    cpu.pc = RESET_VECTORY;
+    cpu.pc = RESET_VECTOR;
 
     /* The zero register is always 0 */
     cpu.gpr[0] = 0;
@@ -21,7 +21,7 @@ static void restart(){
 
 void init_isa(){
     /* Load built-in image. */
-    memcpy(guest_to_host(RESET_VECTORY), img, sizeof(img));
+    memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));
 
     /* Initialize this virtual computer system. */
     restart();

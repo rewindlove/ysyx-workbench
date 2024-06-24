@@ -9,8 +9,6 @@ module ysyx_23060278_top(
 
 	wire [31:0]imm;
 	wire [6:0]opcode;
-	wire [2:0]func3;
-	wire [6:0]func7;
 	wire [4:0]rs1;
 	wire [4:0]rs2;
 	wire [4:0]rd;
@@ -18,18 +16,18 @@ module ysyx_23060278_top(
 	wire [31:0]rd_data1;
 	wire [31:0]rd_data2;
 	wire [31:0]alu_data1;
+  wire [31:0]alu_data2;
 
 	wire [31:0]result;	//add result
 	
 
 	wire [2:0]aluctl;
-	wire alusrc;
+	wire pc_sel;
+  wire imm_sel;
 	wire regwrite;
 
-	wire auipc_en;
 	wire jal_en;
 	wire jalr_en;
-	wire lui_en;
 
 	wire w_pc;
 	wire w_alu;
@@ -52,9 +50,7 @@ module ysyx_23060278_top(
 	ysyx_23060278_decoder decoder(
 		.inst(inst),
 		.opcode(opcode),
-		.func3(func3),
-		.func7(func7),
-		.rs1(rs1),
+    .rs1(rs1),
 		.rs2(rs2),
 		.rd(rd),
 		.imm(imm)
@@ -78,17 +74,13 @@ module ysyx_23060278_top(
 	);
 
 	ysyx_23060278_idu idu(
-		.idu_inst(inst),
 		.idu_opcode(opcode),
-		.f3(func3),
-		.f7(func7),
-		.aluctl(aluctl),
-		.alusrc(alusrc),
+    .aluctl(aluctl),
+		.pc_sel(pc_sel),
+    .imm_sel(imm_sel),
 		.regwrite(regwrite),
-		.auipc_en(auipc_en),
 		.jal_en(jal_en),
 		.jalr_en(jalr_en),
-		.lui_en(lui_en),
 		.w_pc(w_pc),
 		.w_imm(w_imm),
 		.w_alu(w_alu)
@@ -97,13 +89,19 @@ module ysyx_23060278_top(
 	ysyx_23060278_mux2_1 alu_data1_mux(
 		.a(rd_data1),
 		.b(pc),
-		.sel(alusrc),
+		.sel(pc_sel),
 		.opdata(alu_data1)
 	);
 
+  ysyx_23060278_mux2_1 alu_data2_mux(
+    .a(rd_data2),
+    .b(imm),
+    .sel(imm_sel),
+    .opdata(alu_data2)
+  );
 	ysyx_23060278_alu alu(
 		.opdata1(alu_data1),
-		.opdata2(imm),	//目前只实现addi指令
+		.opdata2(alu_data2),
 		.aluctl(aluctl),
 		.result(result)
 		);

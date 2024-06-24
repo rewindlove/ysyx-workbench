@@ -8,7 +8,7 @@ void init_mem();
 void init_difftest(char *ref_so_file, long img_size, int port);
 void init_device();
 void init_sdb();
-void init_disasm(const char *triple);
+//void init_disasm(const char *triple);
 void init_parse_elf(const char *elf_file);
 void init_sim();
 
@@ -19,7 +19,7 @@ static void welcom(){
         "to record the trace. This may lead to a large log file. "
         "If it is not necessary, you can disable it in menuconfig"));
     Log("Build time: %s, %s", __TIME__, __DATE__);
-    printf("Welcom to %s-NPC!\n", ANSI_FMT("riscv32", ANSI_FG_YELLO ANSI_BG_RED));
+    printf("Welcom to %s-NPC!\n", ANSI_FMT("riscv32", ANSI_FG_YELLOW ANSI_BG_RED));
     printf("For help, type \"help\"\n");
 }
 
@@ -41,7 +41,7 @@ static long load_img(){
     }
 
     FILE *fp = fopen(img_file, "rb");
-    Assert(fp, "Can not open '%s', img_file");
+    Assert(fp, "Can not open '%s'", img_file);
 
     fseek(fp, 0, SEEK_END);   //将fp指针指向文件末尾处
     long size = ftell(fp);    //获取文件大小
@@ -121,8 +121,10 @@ void init_monitor(int argc, char *argv[]){
     /* Initialize the simple debugger. */
     init_sdb();
     
-    IFDEF(CONFIG_TRACE, init_disasm("riscv64-pc-linuc-gnu"));
+    //IFDEF(CONFIG_TRACE, init_disasm("riscv64-pc-linuc-gnu"));
 
     /* Display welcom message. */
     welcom();
 }
+
+#endif

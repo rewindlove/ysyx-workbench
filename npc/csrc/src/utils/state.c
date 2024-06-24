@@ -13,23 +13,12 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
-#ifndef __ISA_RISCV32_H__
-#define __ISA_RISCV32_H__
+#include <utils.h>
 
-#include <common.h>
+NPCState npc_state = { .state = NPC_STOP };
 
-typedef struct {
-  word_t gpr[32];
-  vaddr_t pc;
-} CPU_state;
-
-// decode
-typedef struct {
-  union {
-    uint32_t val;
-  } inst;
-} ISADecodeInfo;
-
-#define isa_mmu_check(vaddr, len, type) (MMU_DIRECT)
-
-#endif
+int is_exit_status_bad() {
+  int good = (npc_state.state == NPC_END && npc_state.halt_ret == 0) ||
+    (npc_state.state == NPC_QUIT);
+  return !good;
+}

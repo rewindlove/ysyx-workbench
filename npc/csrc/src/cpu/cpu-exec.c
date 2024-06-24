@@ -1,15 +1,18 @@
 #include <cpu/cpu.h>
+#include <cpu/decode.h>
 #include <locale.h>
-#include <isa.h>
+#include "isa.h"
 
-#definei MAX_INST_TO_PRINT 10
+#define MAX_INST_TO_PRINT 10
+
+extern "C" void npc_run_once(Decode *s);
 
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0;
 static bool g_print_step = false;
 
-static void trece_and_difftest(Decode *_this, vaddr_t dnpc){
+static void trace_and_difftest(Decode *_this, vaddr_t dnpc){
     #ifdef CONFIG_ITRACE_COND
     log_write("%s\n", _this->logbuf);
     #endif /* ifdef CONFIG_ITRACE_COND */
@@ -21,7 +24,7 @@ static void trece_and_difftest(Decode *_this, vaddr_t dnpc){
 static void exec_once(Decode *s, vaddr_t pc){
     s->pc = pc;
     s->snpc = pc;
-    isa_exec_once(s);   //对顶层模块的inst赋值
+    npc_run_once(s);   //对顶层模块的inst赋值
     cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
     char *p = s->logbuf;
@@ -39,8 +42,8 @@ static void exec_once(Decode *s, vaddr_t pc){
     memset(p, ' ', space_len);
     p += space_len;
 
-    void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-    disassemble(p, s->logbuf + sizeof(s->logbuf) - p, s->pc, (uint8_t *)&s->isa.inst.val, ilen);
+    //void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
+    //disassemble(p, s->logbuf + sizeof(s->logbuf) - p, s->pc, (uint8_t *)&s->isa.inst.val, ilen);
 
 #endif /* ifdef CONFIG_ITRACE
     char *p = s->logbuf;
@@ -96,7 +99,7 @@ void cpu_exec(uint64_t n){
         case NPC_END: case NPC_ABORT:
             printf("Program ececution has ended. To restart the program, exit NPC and run again.\n");
             return;
-        default: npc_state.state = MPC_RUNNING;
+        default: npc_state.state = NPC_RUNNING;
     }
 
     uint64_t timer_start = get_time();
@@ -111,7 +114,7 @@ void cpu_exec(uint64_t n){
 
         case NPC_END: case NPC_ABORT:
             Log("nemu: %s at pc = " FMT_WORD,
-                (npc_state.state == NEMU_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
+                (npc_state.state == NPC_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
                  (npc_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
                   ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
                 npc_state.halt_pc);
