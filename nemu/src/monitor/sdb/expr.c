@@ -139,6 +139,7 @@ static bool make_token(char *e) {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	static bool check_parentheses(int p,int q){
 		int i,cnt=0;
@@ -239,6 +240,8 @@ static bool make_token(char *e) {
 									default:break;
 					}
 >>>>>>> pa0
+=======
+>>>>>>> pa2
 
 #if DEBUG
 static char *typeshow(int type) {

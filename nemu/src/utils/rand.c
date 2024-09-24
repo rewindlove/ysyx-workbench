@@ -19,5 +19,5 @@
 #endif
 
 void init_rand() {
-  srand(MUXDEF(CONFIG_TARGET_AM, 0, time(0)));
+  srand(MUXDEF(CONFIG_TARGET_AM, 0, time(0)));	//CONFIG_TARGET(macro)被定义时，返回0（x），未被定义时，返回time(0)(y)。MUXDEF(macro, x, y)
 }

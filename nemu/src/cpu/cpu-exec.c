@@ -19,10 +19,14 @@
 #include <locale.h>
 #include "isa.h"
 <<<<<<< HEAD
+<<<<<<< HEAD
 #include "/home/lius/ysyx-workbench/nemu/src/monitor/sdb/sdb.h"
 =======
 
 >>>>>>> pa1
+=======
+
+>>>>>>> pa2
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.
@@ -36,7 +40,12 @@ static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
 void device_update();
+<<<<<<< HEAD
 void change_check();
+=======
+void change_check();  //watchpoint change check
+void display_inst();
+>>>>>>> pa2
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
@@ -45,9 +54,13 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	change_check();
 >>>>>>> pa1
+=======
+	change_check();
+>>>>>>> pa2
 }
 
 static void exec_once(Decode *s, vaddr_t pc) {
@@ -102,6 +115,7 @@ static void statistic() {
 }
 
 void assert_fail_msg() {
+	IFDEF(CONFIG_IRINGBUF, display_inst());
   isa_reg_display();
   statistic();
 }

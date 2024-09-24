@@ -28,9 +28,12 @@ typedef struct watchpoint {
 } WP;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 extern WP wp_pool[NR_WP];
 =======
 >>>>>>> pa1
+=======
+>>>>>>> pa2
 
 word_t expr(char *e, bool *success);
 
