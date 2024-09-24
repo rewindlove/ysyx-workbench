@@ -1,34 +1,46 @@
 module ysyx_23060278_pc_reg(
 		input clk,
 		input rst,
-		input pc_wen,
 		input jal_en,
 		input jalr_en,
+    input brpc_en,
+    input [31:0]imm,
 		input [31:0]result,
-		output [31:0]dnxt_pc,
-		output [31:0]snxt_pc,
+    input pc_wen,
+		output [31:0]dnpc,
+		output [31:0]snpc,
+    output reg [31:0]tmp_pc,
 		output reg [31:0]pc
 );
 
+  wire [31:0]br_pc = pc + imm;
 	wire [31:0]jal_pc = result;
 	wire [31:0]jalr_pc = result & {{31{1'b1}}, 1'b0};	//跳转地址最低位清零
 
-	wire snxt_en = (!jal_en) & (!jalr_en);	
+	wire snpc_en = (!jal_en) & (!jalr_en) &(!brpc_en);	
 
-	assign snxt_pc = pc + 4;
+	assign snpc = pc + 4;
 	
-	assign dnxt_pc = ({32{snxt_en}} & snxt_pc) |
-									 ({32{jal_en }} & jal_pc ) |
-									 ({32{jalr_en}} & jalr_pc);
+//assign dnpc = ({32{snpc_en}} & snpc) |
+//							({32{jal_en }} & jal_pc ) |
+//							({32{jalr_en}} & jalr_pc) |
+//              ({32{brpc_en}} & br_pc  );
+
+  assign dnpc = snpc_en ? snpc    :
+                jal_en  ? jal_pc  :
+                jalr_en ? jalr_pc :
+                brpc_en ? br_pc   :
+                pc + 4;
+
 
 	always @(posedge clk)	begin
 			if(rst)	begin
 				pc <= 32'h80000000;	//reset
 			end
-			else if(pc_wen)	begin
-				pc <= dnxt_pc;
+			else if (pc_wen) begin
+        pc <= dnpc;
+        tmp_pc <= pc;
 			end
 	end
-
 		
 endmodule

@@ -17,9 +17,9 @@ size_t strlen(const char *s) {
 size_t strnlen(const char *s, size_t count){
 	const char *sc;
 
-	for(sc = s; count-- && *sc != '\0'; ++sc)
+	for(sc = s; (sc - s) < count && *sc != '\0'; ++sc)
 			;
-		return sc - s;
+		return (sc - s);
 	}
 
 char *strcpy(char *dst, const char *src) {

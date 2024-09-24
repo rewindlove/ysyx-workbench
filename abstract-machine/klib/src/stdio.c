@@ -14,6 +14,7 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
+void putch(char ch);
 static char sprint_buf[1024];
 
 static char * number(char * str, unsigned long long num, int base, int size, int precision, int type)
@@ -118,7 +119,12 @@ int printf(const char *fmt, ...) {
 
 	va_start(args, fmt);
 	n = vsprintf(sprint_buf, fmt, args);
-	va_end(args);
+  char *tmp = sprint_buf;
+  while(*tmp != 0){
+        putch(*tmp);
+        tmp++;
+    }
+    va_end(args);
 
 	return n;
 }

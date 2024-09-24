@@ -5,11 +5,11 @@ module ysyx_23060278_regfile(
 	input [4:0]rs1,
 	input [4:0]rs2,
 	input [4:0]rd,
-	input [31:0]imm,
-	input w_imm,
 	input w_pc,
 	input w_alu,
-	input [31:0]result,	//alu_result
+  input w_load,
+  input [31:0]load_data,
+	input [31:0]alu_result,	//alu_result
 	input [31:0]pc_result,	//pc add 4,传入snxt_pc
 	output [31:0]rd_data1,
 	output [31:0]rd_data2
@@ -17,9 +17,9 @@ module ysyx_23060278_regfile(
 
 	wire [31:0]w_data;
 
-	assign w_data = ({32{w_pc }}  & pc_result) |
-									({32{w_alu}}  & result)		|
-									({32{w_imm}}  & imm);
+	assign w_data = ({32{w_pc  }} &  pc_result) |
+									({32{w_alu }} & alu_result) |
+                  ({32{w_load}} &  load_data);
 
 	reg [31:0] regs [31:0];
 
@@ -41,4 +41,8 @@ module ysyx_23060278_regfile(
 	assign rd_data1 = (rs1 == 5'd0) ? 32'd0 : regs[rs1];	//0号寄存器值恒为0
 	assign rd_data2 = (rs2 == 5'd0) ? 32'd0 : regs[rs2];
 
+
+  import "DPI-C" function void set_gpr_ptr(input logic [31:0] a[]);
+
+  initial set_gpr_ptr(regs);
 endmodule

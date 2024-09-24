@@ -1,10 +1,19 @@
 #include <cpu/cpu.h>
 #include <cpu/decode.h>
+#include <cpu/difftest.h>
 #include <locale.h>
 #include "isa.h"
 
+
+#include "verilated.h"
+#include "verilated_dpi.h"
+
 #define MAX_INST_TO_PRINT 10
 
+void display_inst();
+
+
+extern "C" void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
 extern "C" void npc_run_once(Decode *s);
 
 CPU_state cpu = {};
@@ -24,7 +33,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc){
 static void exec_once(Decode *s, vaddr_t pc){
     s->pc = pc;
     s->snpc = pc;
-    npc_run_once(s);   //对顶层模块的inst赋值
+    npc_run_once(s);   //对顶层模块赋值
     cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
     char *p = s->logbuf;
@@ -33,7 +42,7 @@ static void exec_once(Decode *s, vaddr_t pc){
     int i;
     uint8_t *inst = (uint8_t *)&s->isa.inst.val;
     for (i = ilen - 1; i >= 0; i--) {
-        p += snprintf(p, 4, "%02x", inst[i]);
+        p += snprintf(p, 4, " %02x", inst[i]);
     }
     int ilen_max = 4;
     int space_len = ilen_max - ilen;
@@ -42,28 +51,9 @@ static void exec_once(Decode *s, vaddr_t pc){
     memset(p, ' ', space_len);
     p += space_len;
 
-    //void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-    //disassemble(p, s->logbuf + sizeof(s->logbuf) - p, s->pc, (uint8_t *)&s->isa.inst.val, ilen);
-
-#endif /* ifdef CONFIG_ITRACE
-    char *p = s->logbuf;
-    p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
-    int ilen = s->snpc - s->pc;
-    int i;
-    uint8_t *inst = (uint8_t *)&s->isa.inst.val;
-    for (i = ilen - 1; i >= 0; i--) {
-        p += snprintf(p, 4, "%02x", inst[i]);
-    }
-    int ilen_max = 4;
-    int space_len = ilen_max - ilen;
-    if(space_len < 0) space_len = 0;
-    space_len = space_len * 3 + 1;
-    memset(p, ' ', space_len);
-    p += space_len;
-
-    void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
     disassemble(p, s->logbuf + sizeof(s->logbuf) - p, s->pc, (uint8_t *)&s->isa.inst.val, ilen);
- */
+
+#endif 
 }
 
 static void execute(uint64_t n){
@@ -87,7 +77,7 @@ static void statistic(){
 
 
 void assert_fail_msg(){
-    //IFDEF(CONFIG_IRINGBUF, display_inst()); //IRINGBUF
+    IFDEF(CONFIG_IRINGBUF, display_inst()); //IRINGBUF
     isa_reg_display();
     statistic();
 }
@@ -113,7 +103,7 @@ void cpu_exec(uint64_t n){
         case NPC_RUNNING: npc_state.state = NPC_STOP; break;
 
         case NPC_END: case NPC_ABORT:
-            Log("nemu: %s at pc = " FMT_WORD,
+            Log("npc: %s at pc = " FMT_WORD,
                 (npc_state.state == NPC_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
                  (npc_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
                   ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),

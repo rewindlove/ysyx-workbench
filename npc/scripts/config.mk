@@ -22,10 +22,10 @@ $(warning $(COLOR_RED)To build the project, first run 'make menuconfig'.$(COLOR_
 endif
 
 Q            := @
-KCONFIG_PATH := $(NEMU_HOME)/tools/kconfig		//借用nemu中的程序
-FIXDEP_PATH  := $(NEMU_HOME)/tools/fixdep
+KCONFIG_PATH := $(NPC_HOME)/tools/kconfig
+FIXDEP_PATH  := $(NPC_HOME)/tools/fixdep
 Kconfig      := $(NPC_HOME)/Kconfig
-rm-distclean += include/generated include/config .config .config.old
+rm-distclean += csrc/include/generated csrc/include/config .config .config.old
 silent := -s
 
 CONF   := $(KCONFIG_PATH)/build/conf

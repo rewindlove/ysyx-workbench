@@ -21,13 +21,22 @@
 #include <utils.h>
 #include <difftest-def.h>
 
+const char *ref_regs[] = {
+  "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
+  "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
+  "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
+  "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
+};
+
 void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
-void (*ref_difftest_regcpy)(void *dut, bool direction) = NULL;
+void (*ref_difftest_regcpy)(CPU_state *dut, bool direction) = NULL;
 void (*ref_difftest_exec)(uint64_t n) = NULL;
 void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
 
-#ifdef CONFIG_DIFFTEST
 
+void display_inst();
+
+#ifdef CONFIG_DIFFTEST
 static bool is_skip_ref = false;
 static int skip_dut_nr_inst = 0;
 
@@ -66,19 +75,19 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
   handle = dlopen(ref_so_file, RTLD_LAZY);
   assert(handle);
 
-  ref_difftest_memcpy = dlsym(handle, "difftest_memcpy");
+  ref_difftest_memcpy = (void (*)(paddr_t addr, void *buf, size_t n, bool direction))dlsym(handle, "difftest_memcpy");
   assert(ref_difftest_memcpy);
 
-  ref_difftest_regcpy = dlsym(handle, "difftest_regcpy");
+  ref_difftest_regcpy = (void (*)(CPU_state *dut, bool direction))dlsym(handle, "difftest_regcpy");
   assert(ref_difftest_regcpy);
 
-  ref_difftest_exec = dlsym(handle, "difftest_exec");
+  ref_difftest_exec = (void (*)(uint64_t n))dlsym(handle, "difftest_exec");
   assert(ref_difftest_exec);
 
-  ref_difftest_raise_intr = dlsym(handle, "difftest_raise_intr");
+  ref_difftest_raise_intr = (void (*)(uint64_t NO))dlsym(handle, "difftest_raise_intr");
   assert(ref_difftest_raise_intr);
 
-  void (*ref_difftest_init)(int) = dlsym(handle, "difftest_init");
+  void (*ref_difftest_init)(int) = (void (*)(int))dlsym(handle, "difftest_init");
   assert(ref_difftest_init);
 
   Log("Differential testing: %s", ANSI_FMT("ON", ANSI_FG_GREEN));
@@ -91,17 +100,30 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
   ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
 }
 
+void ref_reg_display(CPU_state *ref){
+	printf("The 32 General-Purpose Register of ref is:\n");
+	for(int i = 0;i < 32; i++){
+		printf(ANSI_FG_GREEN "%-3s: " ANSI_FG_BLUE FMT_WORD " " ANSI_NONE, ref_regs[i], ref->gpr[i]);
+		if(i%5 == 4)
+			printf("\n");
+		}
+		printf("\n");
+		printf("Program Counter:\n");
+		printf(ANSI_FG_RED "%-3s: " ANSI_FG_BLUE FMT_WORD ANSI_NONE"\n", "$pc", ref->pc);
+}
+
 static void checkregs(CPU_state *ref, vaddr_t pc) {
   if (!isa_difftest_checkregs(ref, pc)) {
-    nemu_state.state = NEMU_ABORT;
-    nemu_state.halt_pc = pc;
+    npc_state.state = NPC_ABORT;
+    npc_state.halt_pc = pc;
+    IFDEF(CONFIG_IRINGBUF, display_inst()); //IRINGBUF
+    ref_reg_display(ref);
     isa_reg_display();
   }
 }
 
 void difftest_step(vaddr_t pc, vaddr_t npc) {
   CPU_state ref_r;
-
   if (skip_dut_nr_inst > 0) {
     ref_difftest_regcpy(&ref_r, DIFFTEST_TO_DUT);
     if (ref_r.pc == npc) {

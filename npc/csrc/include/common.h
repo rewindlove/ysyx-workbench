@@ -16,6 +16,7 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
+#include <stdio.h>
 #include <stdint.h>
 #include <inttypes.h>
 #include <stdbool.h>
@@ -23,6 +24,7 @@
 
 #include <generated/autoconf.h>
 #include <macro.h>
+
 
 #ifdef CONFIG_TARGET_AM
 #include <klib.h>

@@ -16,6 +16,10 @@
 #include <isa.h>
 #include "local-include/reg.h"
 
+
+#include "verilated.h"
+#include "verilated_dpi.h"
+
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
   "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
@@ -23,7 +27,25 @@ const char *regs[] = {
   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
 
+uint32_t *cpu_reg;
+
+extern "C" void set_gpr_ptr(const svOpenArrayHandle r) {
+  cpu_reg = (uint32_t *)(((VerilatedDpiOpenVar*)r)->datap());
+}
+
+void set_cpu_gpr(){
+    for(int i = 0; i < 32; i++){
+        cpu.gpr[i] = cpu_reg[i];
+    }
+}
+
+extern "C" void npc_trap(vaddr_t pc, int halt_ret){
+    npc_state.state = NPC_END;
+    npc_state.halt_pc = cpu.pc;
+    npc_state.halt_ret = cpu_reg[10];
+}
 void isa_reg_display() {
+    set_cpu_gpr();
 	printf("The 32 General-Purpose Register is:\n");
 	for(int i = 0;i < 32; i++){
 		printf(ANSI_FG_GREEN "%-3s: " ANSI_FG_BLUE FMT_WORD " " ANSI_NONE, regs[i], cpu.gpr[i]);
