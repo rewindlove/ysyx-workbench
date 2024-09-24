@@ -138,6 +138,107 @@ static bool make_token(char *e) {
   return true;
 }
 
+<<<<<<< HEAD
+=======
+	static bool check_parentheses(int p,int q){
+		int i,cnt=0;
+		if(tokens[p].type!='('||tokens[q].type!=')')		//首尾没有括号
+						return false;
+		for(i=p;i<=q;i++){
+			if(tokens[i].type=='(')
+							cnt++;
+			else if(tokens[i].type==')')
+							cnt--;
+			if(cnt==0&&i<q)		//左右括号数相等，括号匹配
+							return false;
+		}
+		if(cnt!=0)
+						return false;
+		return true;
+	}
+	int dominant_operator(int p,int q){
+			int i;
+			int pos=1;
+			int pri=0;
+			int pare=0;
+			for(i=q;i>=1;i--){
+					if(tokens[i].type == ')') pare++;
+					if(tokens[i].type == '(') pare--;
+					if(pare!=0) continue;
+					switch(tokens[i].type){
+									case TK_EQ:{
+																if(pri<7){
+																		pos=i;
+																		pri=7;
+																}
+																break;
+														 }
+									case TK_NEQ:{
+																if(pri<7){
+																		pos=i;
+																		pri=7;
+																}
+																break;
+														 }
+									case TK_AND:{
+																if(pri<11){
+																		pos=i;
+																		pri=11;
+																}
+																break;
+															}
+									case TK_OR:{
+																if(pri<12){
+																		pos=i;
+																		pri=12;
+																}
+																break;
+														 }
+									case TK_NOT:{
+																if(pri<2){
+																		pos=i;
+																		pri=2;
+																}
+																break;
+														 }
+									case'+':{
+														if(pri<4){
+																pos=i;
+																pri=4;
+														}
+														break;
+													}
+									case'-':{
+														if(pri<4){
+																pos=i;
+																pri=4;
+														}
+														break;
+													}
+									case'*':{
+														if(pri<3){
+																pos=i;
+																pri=3;
+														}
+														break;
+													}
+									case'/':{
+														if(pri<3){
+																pos=i;
+																pri=3;
+														}
+														break;
+													}
+									case TK_MINUS:{
+														if(pri<2){
+																pos=i;
+																pri=2;
+														}
+														break;
+													}
+									default:break;
+					}
+>>>>>>> pa0
 
 #if DEBUG
 static char *typeshow(int type) {
