@@ -16,7 +16,7 @@ LDFLAGS   += --gc-sections -e _start
 
 NPCFLAGS  += -l $(shell dirname $(IMAGE).elf)/nemu-log.txt
 NPCFLAGS  += -e $(IMAGE).elf
-NPCFLAGS  += -b
+#NPCFLAGS  += -b
 
 CFLAGS += -DMAINARGS=\"$(mainargs)\"
 CFLAGS += -I$(AM_HOME)/am/src/riscv/npc/include

@@ -75,18 +75,19 @@ extern "C" void trace_inst(word_t pc, uint32_t inst);
 
 extern "C" void npc_run_once(Decode *s){
 
-    top->clk = !top->clk;   //产生上升沿
+    top->clk = 0;   //产生上升沿 
+
     top->inst = inst_fetch(&top->pc, 4);
+    top->eval();
 
     s->snpc = top->snpc;
     s->dnpc = top->dnpc;
     s->pc   = top->pc;
 
     s->isa.inst.val = top->inst; //将取出的指令传入仿真环境
-    top->eval();
     IFDEF(CONFIG_WAVE, step_and_dump_wave());
 
-    top->clk = !top->clk;  //产生下降沿
+    top->clk = 1;  //产生下降沿
     top->eval();
     IFDEF(CONFIG_WAVE, step_and_dump_wave());
     
